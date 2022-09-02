@@ -1,10 +1,17 @@
-GOS.createNode('root', 'test', 2, class Mono extends GOS.Node {
-    constructor(name, parent, priority, level) {
-        super(name, parent, priority, level);
-
+GOS.createNode('root', 'roadManager', 2, [], class roadManager {
+    constructor(){
         this.x = 2
     }
-    testMethod() {
-        console.log("Hi I'm a test!")
+    createRoad(a,b){
+        GOS.createNode('roadManager', 'road1', 2, [a,b], class Mono{
+            constructor(a,b) {
+                this.a = a
+                this.b = b
+            }
+            update(){
+                strokeWeight(22)
+                line(a.x, a.y, b.x, b.y)
+            }
+        })
     }
 })

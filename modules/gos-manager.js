@@ -25,7 +25,7 @@ export class Node {
 
 }
 // Varible stores the entire node tree
-const objectList = new Node('ROOT', 'NONE', 0, 0);
+export const objectList = new Node('ROOT', 'NONE', 0, 0) 
 
 // ========== Public Methods =========
 
@@ -58,10 +58,21 @@ function insertNode(node) {
 }
 
 // Create a node
-export function createNode(path, name, priority, classBody) {
+export function createNode(path, name, priority, args, classBody) {
     const parent = get(path);
     const level = path.toUpperCase() == 'ROOT' ? 1 : 1 + path.split('.').length;
-    insertNode(new classBody(name, parent, priority, level));
+    const customClass = class Node extends classBody {
+        constructor(name, parent, priority, level, args) {
+            super(...args)
+            this.name = name;
+            this.parent = parent; // The node's parent. For easier access through the tree
+            this.children = new Map(); // Data of the node. Contains other nodes and leafs
+            this.priority = priority; // Node priority. Defines which sibling is read first
+            this.level = level; // Defines nodes level in tree
+            this.parentArgs
+        }
+    }
+    insertNode(new customClass(name,parent,priority,level,args));
 }
 
 // Delete a node
@@ -72,7 +83,8 @@ export function deleteNode(path) {
 
 window.draw = (node = objectList) => {
     push();
-    const objectMethods = Object.keys(node).filter(key => typeof node[key] === 'function')
+    // this shitshow..... smh
+    const objectMethods = node.name.toUpperCase() == "ROOT" ? Object.keys(node).filter(key => typeof node[key] === 'function') : Object.getOwnPropertyNames(node.__proto__.__proto__).filter(key => typeof node[key] === 'function')
     if (objectMethods.indexOf('update') != -1) {
         node.update();
     }
