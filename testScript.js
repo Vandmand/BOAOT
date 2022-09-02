@@ -1,7 +1,10 @@
-export function func1() {
-    return 'foo'
-}
+GOS.createNode('root', 'test', 2, class Mono extends GOS.Node {
+    constructor(name, parent, priority, level) {
+        super(name, parent, priority, level);
 
-export function func2() {
-    return func1() + 'bar'
-}
+        this.x = 2
+    }
+    testMethod() {
+        console.log("Hi I'm a test!")
+    }
+})

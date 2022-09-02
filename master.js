@@ -1,9 +1,14 @@
 import * as GOS from './modules/gos-manager.js'
 
-window.GOS = GOS
+GOS.createGameObject('./testScript.js')
 
+window.GOS = GOS;
 
-window.setup = () => {
-  createCanvas(windowWidth, windowHeight)
+GOS.get('root').setup = () => {
+  createCanvas(windowWidth,windowHeight);
+}
+
+GOS.get('root').update = () => {
+  background(220);
 }
 
