@@ -1,6 +1,3 @@
-import * as GOS from './modules/gos-manager.js';
-import globalMoney from './master.js';
-
 GOS.createNode('root', 'cityManager', 1, [], class cityManager{
     constructor(){
         this.cities = [];
@@ -17,10 +14,6 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 this.timeSinceSupply = 0;
             }
             
-            getExport(){ //simple getter for export
-                return this.export
-            }
-
             update(){
                 this.timeSinceSupply++
 
@@ -28,7 +21,8 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
             }
 
             drawCity(){
-                circle(x, y, 10) //temporary visual representation of cities
+                strokeWeight(1);
+                circle(x, y, 10); //temporary visual representation of cities
             }
 
             supplyCity(tradeImport){
@@ -37,7 +31,17 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                   globalMoney += 10;
                 } else{throw TypeError('incorrect import');}
             }
+
+            getExport(){ //simple getter for export
+                return this.export
+            }
+
         }))
+    }
+
+    // ======== cityHandler Methods =======
+    update(){
+
     }
 
     assignTrade(){ //assigns import and export in pairs
@@ -50,3 +54,4 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
 
     }
 })
+
