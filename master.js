@@ -13,3 +13,5 @@ GOS.get('root').update = () => {
 }
 
 window.GOS = GOS;
+
+var globalMoney = 100;
