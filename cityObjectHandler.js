@@ -3,8 +3,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
         this.cities = [];
     }
     createCity(x, y, name){
-        this.cities.push(
-        GOS.createNode('cityManager','city','1',[x, y, cityExport, cityImport, name], class mono{
+        GOS.createNode('cityManager', name, '1', [x, y,], class mono{
             constructor(x, y, name){
                 this.x = x;
                 this.y = y;
@@ -13,16 +12,15 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 this.import
                 this.timeSinceSupply = 0;
             }
-            
-            update(){
-                this.timeSinceSupply++
 
+            update(){
+                this.timeSinceSupply++ 
                 this.drawCity()
             }
 
             drawCity(){
                 strokeWeight(1);
-                circle(x, y, 10); //temporary visual representation of cities
+                circle(this.x, this.y, 50); //temporary visual representation of cities
             }
 
             supplyCity(tradeImport){
@@ -36,7 +34,8 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 return this.export
             }
 
-        }))
+        })
+        this.cities.push(GOS.get('cityManager.'+name)); //push the initialized city into the cities aray for easier access
     }
 
     // ======== cityHandler Methods =======
