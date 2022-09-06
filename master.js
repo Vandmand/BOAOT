@@ -9,7 +9,9 @@ GOS.get('root').setup = () => {
 }
 
 GOS.get('root').update = () => {
-  background(50);
+  background(100);
 }
 
 window.GOS = GOS;
+
+export var globalMoney = 100;
