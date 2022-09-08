@@ -3,6 +3,7 @@ import {cityData} from './modules/cityData.js'
 GOS.createNode('root', 'cityManager', 1, [], class cityManager{
     constructor(){
      this.cities = [];
+     this.counter = 0;
     }
     createCity(x, y, name){
         GOS.createNode('cityManager', name, '1', [x, y], class mono{
@@ -27,12 +28,13 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 }
 
                 if(this.isReal){
-                this.timeSinceSupply++ 
-                this.drawCity()
-                this.displayTrade()
+                this.timeSinceSupply++;
+                this.drawCity();
+                this.displayTrade();
              }    
             }
 
+            //====Visual methods====
             drawCity(){
                 strokeWeight(1);
                 circle(this.x, this.y, 50); //temporary visual representation of cities
@@ -42,18 +44,23 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
 
             }
 
-            mouseOverCity(){
-               return dist(mouseX,mouseY,this.x,this.y) <= 25 ? true : false;
-                 
-            }
-
             displayTrade(){
                 if(this.mouseOverCity()){
+                    rectMode(CENTER);
+                    line(this.x, this.y-25, this.x, this.y-50);
+                    rect(this.x, this.y-50, 200, 25)
                     let ex = typeof this.tradeExport === 'object' ? this.tradeExport.name :'None';  
                     let im = typeof this.tradeImport === 'object' ? this.tradeImport.name :'None'; 
                     text('export: ' + ex + ' | import: ' + im, this.x, this.y-50);
                 }
             }
+            //====================
+            mouseOverCity(){
+               return dist(mouseX,mouseY,this.x,this.y) <= 25 ? true : false;
+                 
+            }
+
+
 
             supplyCity(tradeImport){
                 if(this.tradeImport === tradeImport){
@@ -71,20 +78,34 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
     }
 
     // ======== cityHandler Methods =======
+    setup(){
+        this.gameStart();
+    }
+
     gameStart(){ //upon game start, 2 cities must be initilized before we assign them trade
     while (this.cities.length < 2) {
         let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
-        console.log(cityDataIndex);
         this.createCity(random(0, windowWidth),random(0, windowHeight),cityData[cityDataIndex].name);
-        cityData.splice(cityDataIndex);
+        cityData.splice(cityDataIndex, 1);
     } 
     this.assignTrade();
         
     }
       
+    tryForCity() {
+        if(Math.random()*1000 < this.counter/1000){
+            let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
+            this.createCity(random(0, windowWidth),random(0, windowHeight),cityData[cityDataIndex].name);
+            cityData.splice(cityDataIndex, 1);
+            
+            this.assignTrade();
+        this.counter = 0;
+        } else{this.counter++;}
+    }
 
     update(){
-
+        if(cityData.length != 0){
+        this.tryForCity();}
     }
 
     assignTrade(){ //assigns import and export in pairs
