@@ -104,7 +104,11 @@ window.setup = (node = objectList) => {
 
 export function createGameObject(src) {
     const js = document.createElement("script");
-    js.type = 'text/javascript';
+    js.type = 'module';
     js.src = src
     document.body.appendChild(js);
 }
+
+// export function childValues(parent){
+// return Object.values(Object.values(GOS.get(parent))[Object.keys(GOS.get('cityManager')).indexOf('children')])
+// }
