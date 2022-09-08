@@ -13,17 +13,20 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 this.tradeExport;
                 this.tradeImport;
                 this.timeSinceSupply = 0;
+                this.isReal = false;
             }
 
             update(){
+                if(this.isReal){
                 this.timeSinceSupply++ 
-                this.drawCity()
+                this.drawCity()}
             }
 
             drawCity(){
                 strokeWeight(1);
                 circle(this.x, this.y, 50); //temporary visual representation of cities
                 //temporary display of name and export/import
+                textAlign(CENTER, CENTER)
                 text(this.name, x, y);
 
             }
@@ -40,7 +43,9 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
             }
 
         })
+        if(typeof name === 'string'){
         this.cities.push(GOS.get('cityManager.' + name));
+        isReal = true}
     }
 
     // ======== cityHandler Methods =======
