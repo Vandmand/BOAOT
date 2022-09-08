@@ -70,6 +70,13 @@ export function createNode(path, name, priority, args, classBody) {
             this.priority = priority; // Node priority. Defines which sibling is read first
             this.level = level; // Defines nodes level in tree
             this.parentArgs
+            this.init = () => {
+                if(initialized){
+                    super.setup();
+                }
+                delete(this.init)
+            }
+            this.init();
         }
     }
     insertNode(new customClass(name,parent,priority,level,args));
@@ -92,15 +99,19 @@ window.draw = (node = objectList) => {
     pop();
 }
 
+let initialized = false;
+
 window.setup = (node = objectList) => {
-    const objectMethods = Object.keys(node).filter(key => typeof node[key] === 'function')
+    // this shitshow..... smh
+    const objectMethods = node.name.toUpperCase() == "ROOT" ? Object.keys(node).filter(key => typeof node[key] === 'function') : Object.getOwnPropertyNames(node.__proto__.__proto__).filter(key => typeof node[key] === 'function')
     if (objectMethods.indexOf('setup') != -1) {
         node.setup();
     }
     node.children.forEach(child => window.setup(child))
+    initialized = true
 }
 
-// ========= OTHER ESSENCEIALS
+// ========= OTHER ESSENSIALS
 
 export function createGameObject(src) {
     const js = document.createElement("script");
