@@ -72,7 +72,9 @@ export function createNode(path, name, priority, args, classBody) {
             this.parentArgs
             this.init = () => {
                 if(initialized){
-                    super.setup();
+                    if(super.setup){
+                        super.setup();
+                    }
                 }
                 delete(this.init)
             }
