@@ -1,7 +1,5 @@
 import * as GOS from './modules/gos-manager.js'
 
-
-// GOS.createGameObject('./testScript.js')
 GOS.createGameObject('./cityObjectHandler.js')
 GOS.createGameObject('./road.js')
 
@@ -10,9 +8,7 @@ GOS.get('root').setup = () => {
 }
 
 GOS.get('root').update = () => {
-  background(100);
+  background(50);
 }
 
 window.GOS = GOS;
-
-export var globalMoney = 100;

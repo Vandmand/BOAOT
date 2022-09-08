@@ -13,9 +13,15 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 this.tradeExport;
                 this.tradeImport;
                 this.timeSinceSupply = 0;
+
             }
 
             update(){
+                // Elias was here
+                if(mouseOverCity() && mousePressed()){
+                    GOS.get('roadManager').addRoad(this);
+                }
+
                 this.timeSinceSupply++ 
                 this.drawCity()
             }
