@@ -9,5 +9,10 @@ cityData[4] = {name: "Rome"};
 cityData[5] = {name: "Tokoyo"};
 cityData[6] = {name: "Randers"};
 cityData[7] = {name: "Copenhagen"};
+cityData[8] = {name: "CapeTown"};
+cityData[9] = {name: "MexicoCity"};
+cityData[10] = {name: "Cairo"};
+cityData[11] = {name: "Kyiv"};
+cityData[11] = {name: "Beijing"};
 
 export {cityData};
