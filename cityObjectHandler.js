@@ -16,10 +16,33 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 this.timeSinceSupply = 0;
                 this.isReal = typeof name === 'string' ? false : true;
 
-                this.connections = []
+                this.neighbors = []
+                this.connections = {}
             }
-            addConnection(city){
-                
+            updateConnection(city, connections){
+                Object.keys(connections).forEach(key => {
+                    console.log(key)
+                    if(key == this.name){
+                        return
+                    } else {
+                        if(this.connections[key]){
+                            this.connections[key].push(city)
+                        } else {
+                            this.connections[key] = city.connections[key]
+                        }
+                    }
+                })
+                if(this.tradeExport){
+                    if(this.connections[this.tradeExport.name]){
+                        console.log('now i have a connection');
+                    }
+                }
+                this.neighbors.forEach(neighbor => {
+                    if(neighbor.name !== city.name){
+                        neighbor.updateConnection(this, connections)
+                    }
+                })
+
             }
             update(){
                 // Elias was here
