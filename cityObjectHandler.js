@@ -19,7 +19,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
         
             update(){
                 // Elias was here
-                if(mouseOverCity() && mousePressed()){
+                if(this.mouseOverCity() && mousePressed()){
                     GOS.get('roadManager').addRoad(this);
                 }
 
