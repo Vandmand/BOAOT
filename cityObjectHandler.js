@@ -93,19 +93,19 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
     }
       
     tryForCity() {
-        if(Math.random()*1000 < this.counter/1000){
+        // if(Math.random()*1000 < this.counter/1000){
             let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
             this.createCity(random(0, windowWidth),random(0, windowHeight),cityData[cityDataIndex].name);
             cityData.splice(cityDataIndex, 1);
             
             this.assignTrade();
         this.counter = 0;
-        } else{this.counter++;}
+        // } else{this.counter++;}
     }
 
     update(){
-        if(cityData.length != 0){
-        this.tryForCity();}
+        // if(cityData.length != 0){
+        // this.tryForCity();}
     }
 
     assignTrade(){ //assigns import and export in pairs
