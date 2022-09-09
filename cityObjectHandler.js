@@ -6,7 +6,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
      this.counter = 0;
     }
     createCity(x, y, name){
-        GOS.createNode('cityManager', name, '1', [x, y,], class mono{
+        GOS.createNode('cityManager', name, '1', [x, y], class mono{
             constructor(x, y, name){
                 this.x = x;
                 this.y = y;
@@ -15,11 +15,15 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 this.tradeImport;
                 this.timeSinceSupply = 0;
                 this.isReal = typeof name === 'string' ? false : true;
+
+                this.connections = []
             }
-        
+            addConnection(city){
+                
+            }
             update(){
                 // Elias was here
-                if(this.mouseOverCity() && mousePressed()){
+                if(this.mouseOverCity() && mouseIsPressed){
                     GOS.get('roadManager').addRoad(this);
                 }
 
