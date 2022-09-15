@@ -124,10 +124,20 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
         this.gameStart();
     }
 
-    gameStart() { //upon game start, 2 cities must be initilized before we assign them trade
-        while (this.cities.length < 2) {
-            let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
-            this.createCity(random(0, windowWidth), random(0, windowHeight), cityData[cityDataIndex].name);
+    gameStart(){ //upon game start, 2 cities must be initilized before we assign them trade
+    while (this.cities.length < 2) {
+        let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
+        this.createCity(random(0, windowWidth),random(0, windowHeight),cityData[cityDataIndex].name);
+        cityData.splice(cityDataIndex, 1);
+    } 
+    this.assignTrade();
+        
+    }
+      
+    tryForCity() {
+        if(Math.random()*1000 < this.counter/1000){
+            let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
+            this.createCity(random(0, windowWidth),random(0, windowHeight),cityData[cityDataIndex].name);
             cityData.splice(cityDataIndex, 1);
         }
         this.assignTrade();
@@ -141,14 +151,13 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
             cityData.splice(cityDataIndex, 1);
 
             this.assignTrade();
-            this.counter = 0;
-        } else { this.counter++; }
+        this.counter = 0;
+        } else{this.counter++;}
     }
 
-    update() {
-        if (cityData.length != 0) {
-            this.tryForCity();
-        }
+    update(){
+        if(cityData.length != 0){
+        this.tryForCity();}
     }
 
     assignTrade() { //assigns import and export in pairs
