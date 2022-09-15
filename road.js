@@ -13,15 +13,6 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
                 line(this.city1.x,this.city1.y,this.city2.x,this.city2.y)
             }
             setup(){
-                let con2 = city2.connections
-                let con1 = city1.connections
-                con2[city1.name] = [city2]
-                con1[city2.name] = [city1]
-                console.log(con1,con2)
-
-                city1.updateConnection(city2, con2)
-                city2.updateConnection(city1, con1)
-
                 city1.neighbors.push(city2)
                 city2.neighbors.push(city1)
             }
