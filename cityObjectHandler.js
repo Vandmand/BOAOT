@@ -152,7 +152,6 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
         this.cityGraphics[0] = loadImage('./Graphics/City Icon/City_logo.png');
         soundFormats('mp3');
         this.citySoundEffect = loadSound('./Sound/Whoosh.mp3');
-        console.log(this.citySoundEffect);
     }
 
     gameStart(){ //upon game start, 2 cities must be initilized before we assign them trade
