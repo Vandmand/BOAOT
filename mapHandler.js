@@ -7,10 +7,10 @@ GOS.createNode('root', 'Map', -1, [], class Map{
  }
 
  update(){
-    image(this.worldMap, 0, 0);
+    image(this.worldMap, GXY.transform(0,"x"), GXY.transform(0,"y"));
  }
 
-})
 
-//=======
+
+})
 

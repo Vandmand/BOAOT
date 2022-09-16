@@ -1,12 +1,12 @@
 import * as GOS from './modules/gos-manager.js';
-import { globalTransform } from './modules/globalTransform.js';
+import * as GXY from './modules/GXY-manager.js';
 
 document.body.style.overflow = 'hidden';
 
 GOS.createGameObject('./cityObjectHandler.js')
 GOS.createGameObject('./road.js')
 GOS.createGameObject('./mapHandler.js')
-
+GOS.createGameObject('./UI-Handler.js')
 
 
 GOS.get('root').setup = () => {
@@ -14,7 +14,8 @@ GOS.get('root').setup = () => {
 }
 
 GOS.get('root').update = () => {
-translate(globalTransform()[0],globalTransform()[1])
+GXY.moveWindow()
+background(182,219,246)
 }
 
 //temp function for debuggin'
@@ -22,5 +23,10 @@ window.newC = function(){
   GOS.get('cityManager').tryForCity();
 }
 
+window.mouseClicked = function(){
+  console.log(GXY.transform(-mouseX,"x"),GXY.transform(-mouseY,"y"))
+}
+
 
 window.GOS = GOS;
+window.GXY = GXY;
