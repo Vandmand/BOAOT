@@ -81,7 +81,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 if (this.isReal) {
                     this.timeSinceSupply++;
                     this.drawCity();
-                    this.displayTrade();
+                    this.displayInfo();
                 }
             }
 
