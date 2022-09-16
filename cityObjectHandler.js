@@ -135,18 +135,15 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
             //====================
             mouseOverCity(){
             return dist(mouseX,mouseY,GXY.transform(this.x,"x"),GXY.transform(this.y,"y")) <= this.visualDiameter/2 ? true : false;
-
             }
             supplyCity(tradeImport) {
                 if (this.tradeImport === tradeImport) {
                     this.timeSinceSupply = 0;
                 } else { throw TypeError('incorrect import'); }
             }
-
             getExport() { //simple getter for exports
                 return this.tradeExport
             }
-
         })
         if (typeof name === 'string') {
             this.cities.push(GOS.get('cityManager.' + name));
