@@ -1,41 +1,42 @@
+let roadInt = 0;
 GOS.createNode('root', 'roadManager', 0, [], class roadManager {
-    constructor(){
+    constructor() {
         this.connection = undefined
     }
-    createRoad(city1, city2){
-        GOS.createNode('roadManager', 'road' + city1.name + city2.name, 2, [city1,city2], class Mono{
-            constructor(city1,city2) {
+    createRoad(city1, city2) {
+        GOS.createNode('roadManager', 'road' + roadInt++, 2, [city1, city2], class Mono {
+            constructor(city1) {
                 this.city1 = city1
-                this.city2 = city2
+                this.city2;
             }
-            update(){
+            update() {
+                let secondSet = this.city2 ? this.city2 : {x: mouseX, y: mouseY}
                 strokeWeight(22)
-                line(this.city1.x,this.city1.y,this.city2.x,this.city2.y)
+                line(this.city1.x, this.city1.y, secondSet.x, secondSet.y)
             }
-            setup(){
-                let con2 = city2.connections
-                let con1 = city1.connections
-                con2[city1.name] = [city2]
-                con1[city2.name] = [city1]
-                console.log(con1,con2)
-
-                city1.updateConnection(city2, con2)
-                city2.updateConnection(city1, con1)
-
-                city1.neighbors.push(city2)
-                city2.neighbors.push(city1)
+            finish(city2) {
+                this.city2 = city2
+                if (city1.neighbors.indexOf(this.city2.name) != -1) {
+                    GOS.deleteNode('roadManager.' + this.name)
+                } else {
+                    this.city2 = city2
+                    city1.neighbors.push(this.city2)
+                    city2.neighbors.push(this.city1)
+                }
             }
         })
     }
-    addRoad(node){
-        if(this.connection){
-            if(node.name == this.connection.name){
+    addRoad(node) {
+        if (this.connection) {
+            if (node.name == this.connection.name) {
                 return
+            } else {
+                GOS.get('roadManager.road' + (roadInt-1).toString()).finish(node)
+                this.connection = undefined;
             }
-            this.createRoad(this.connection,node)
-            this.connection = undefined;
         } else {
             this.connection = node;
+            this.createRoad(this.connection, { x: mouseX, y: mouseY })
         }
     }
 })
