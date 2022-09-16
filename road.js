@@ -13,7 +13,7 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
             }
             update() {
                 let secondSet = this.city2 ? this.city2 : {x: mouseX-GXY.relativeX, y: mouseY-GXY.relativeY}
-                strokeWeight(22)
+                strokeWeight(15)
                 line(GXY.transform(this.city1.x,'x'),GXY.transform(this.city1.y,'y'), GXY.transform(secondSet.x,'x'), GXY.transform(secondSet.y,'y'))
             }
             finish(city2) {
@@ -24,6 +24,7 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
                     this.city2 = city2
                     city1.neighbors.push(this.city2)
                     city2.neighbors.push(this.city1)
+                    window.money -= Math.floor(dist(this.city1.x,this.city1.y,this.city2.x,this.city2.y) * 10)
                 }
             }
         })

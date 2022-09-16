@@ -41,6 +41,12 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                         if (depth != 0) {
                             setTimeout(() => {
                                 console.log('Delivered from ' + this.from.name + ' to ' + this.to.name);
+                                window.money += depth*1000
+                                GOS.get('UI').earned = '+' + (depth*1000)
+                                setTimeout(() => {
+                                    this.to.timeSinceSupply = 0;
+                                    GOS.get('UI').earned = ''
+                                }, 2000)
                                 GOS.deleteNode(this.name);
                             }, depth * 1000)
                         }
@@ -73,6 +79,11 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 } else if (!keyIsDown(32)) {
                     startDrag = false
                 }
+
+                if(this.timeSinceSupply > 2000 && this.tradeImport) {
+                    GOS.get('UI').game = false;
+                }
+
                 if (this.tradeExport && this.nextExport == 0) {
                     this.createPacket(this, this.tradeExport)
                     this.nextExport = 600
