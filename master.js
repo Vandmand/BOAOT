@@ -15,6 +15,9 @@ GOS.get('root').setup = () => {
 
 GOS.get('root').update = () => {
 translate(globalTransform()[0],globalTransform()[1])
+if(mouseIsPressed){
+  console.log(true)
+}
 }
 
 //temp function for debuggin'
