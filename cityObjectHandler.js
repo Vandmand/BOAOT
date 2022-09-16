@@ -1,17 +1,17 @@
-import {cityData} from './modules/cityData.js'
+import { cityData } from './modules/cityData.js'
 import * as GXY from './modules/GXY-manager.js'
 const mapHeight = 2234; const mapWidth = 4500;
 let startDrag = false
 
-GOS.createNode('root', 'cityManager', 1, [], class cityManager{
-    constructor(){
-     this.cities = [];
-     this.counter = 0;
-     this.cityGraphics = []; //it's loaded in the city manager to reduce stress
+GOS.createNode('root', 'cityManager', 1, [], class cityManager {
+    constructor() {
+        this.cities = [];
+        this.counter = 0;
+        this.cityGraphics = []; //it's loaded in the city manager to reduce stress
     }
-    createCity(x, y, name, Graphics){
-        GOS.createNode('cityManager', name, '1', [x, y, Graphics = this.cityGraphics], class mono{
-            constructor(x, y, name, Graphics){
+    createCity(x, y, name, Graphics = this.cityGraphics) {
+        GOS.createNode('cityManager', name, '1', [x, y, Graphics], class City {
+            constructor(x, y, Graphics, name) {
                 this.x = x;
                 this.y = y;
                 this.name = name;
@@ -21,6 +21,9 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 this.isReal = typeof name === 'string' ? false : true;
                 this.cityGraphics = Graphics;
                 this.visualDiameter = 50
+                this.state = 0
+
+                console.log(this.cityGraphics)
 
                 this.nextExport = 0
                 this.neighbors = []
@@ -39,8 +42,8 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                         if (depth != 0) {
                             setTimeout(() => {
                                 console.log('Delivered from ' + this.from.name + ' to ' + this.to.name);
-                                window.money += depth*1000
-                                GOS.get('UI').earned = '+' + (depth*1000)
+                                window.money += depth * 1000
+                                GOS.get('UI').earned = '+' + (depth * 1000)
                                 setTimeout(() => {
                                     this.to.timeSinceSupply = 0;
                                     GOS.get('UI').earned = ''
@@ -69,7 +72,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 });
             }
 
-            update(){
+            update() {
                 // Elias was here
                 if (this.mouseOverCity() && keyIsDown(32) && !startDrag) {
                     startDrag = true
@@ -78,8 +81,15 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                     startDrag = false
                 }
 
-                if(this.timeSinceSupply > 2000 && this.tradeImport) {
+                
+                if (this.timeSinceSupply > 4000) {
                     GOS.get('UI').game = false;
+                } else if(this.timeSinceSupply > 1500) {
+                    this.state = 1
+                } else if(this.timeSinceSupply > 3000) {
+                    this.state = 2
+                } else {
+                    this.state = 0
                 }
 
                 if (this.tradeExport && this.nextExport == 0) {
@@ -90,7 +100,9 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 }
 
                 if (this.isReal) {
-                    this.timeSinceSupply++;
+                    if (this.tradeImport) {
+                        this.timeSinceSupply++;
+                    }
                     this.drawCity();
                     this.displayInfo();
                 }
@@ -99,28 +111,29 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
             //====Visual methods====
             drawCity() {
                 strokeWeight(1);
-                image(Graphics[0],GXY.transform(this.x,"x")-this.visualDiameter/2, GXY.transform(this.y,"y")-this.visualDiameter/2,this.visualDiameter,this.visualDiameter);
-
+                if(this.cityGraphics){
+                    image(this.cityGraphics[this.state], GXY.transform(this.x, "x") - this.visualDiameter / 2, GXY.transform(this.y, "y") - this.visualDiameter / 2, this.visualDiameter, this.visualDiameter);
+                }
             }
 
-            displayInfo(){
-                if(this.mouseOverCity()){
+            displayInfo() {
+                if (this.mouseOverCity()) {
                     textAlign(CENTER, CENTER)
                     rectMode(CENTER);
-                    let tempX = GXY.transform(this.x,"x")
-                    let tempY = GXY.transform(this.y,"y")
-                    line(tempX, tempY-25, tempX, tempY-50);
-                    rect(tempX, tempY-50-6.25, 200, 25+12.5)
-                    let ex = typeof this.tradeExport === 'object' ? this.tradeExport.name :'None';  
-                    let im = typeof this.tradeImport === 'object' ? this.tradeImport.name :'None'; 
-                    text('export: ' + ex + ' | import: ' + im, tempX, tempY-50);
-                    text(this.name, tempX, tempY-50-25/2,this.visualDiameter);
+                    let tempX = GXY.transform(this.x, "x")
+                    let tempY = GXY.transform(this.y, "y")
+                    line(tempX, tempY - 25, tempX, tempY - 50);
+                    rect(tempX, tempY - 50 - 6.25, 200, 25 + 12.5)
+                    let ex = typeof this.tradeExport === 'object' ? this.tradeExport.name : 'None';
+                    let im = typeof this.tradeImport === 'object' ? this.tradeImport.name : 'None';
+                    text('export: ' + ex + ' | import: ' + im, tempX, tempY - 50);
+                    text(this.name, tempX, tempY - 50 - 25 / 2, this.visualDiameter);
                 }
             }
             //====================
-            mouseOverCity(){
-            //    return dist(mouseX,mouseY,GXY.transform(this.x,"x"),GXY.transform(this.y,"y")) <= 25 ? true : false;
-            return dist(mouseX,mouseY,GXY.transform(this.x,"x"),GXY.transform(this.y,"y")) <= this.visualDiameter/2 ? true : false;
+            mouseOverCity() {
+                //    return dist(mouseX,mouseY,GXY.transform(this.x,"x"),GXY.transform(this.y,"y")) <= 25 ? true : false;
+                return dist(mouseX, mouseY, GXY.transform(this.x, "x"), GXY.transform(this.y, "y")) <= this.visualDiameter / 2 ? true : false;
 
             }
             supplyCity(tradeImport) {
@@ -134,40 +147,47 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
             }
 
         })
-        if(typeof name === 'string'){
-        this.cities.push(GOS.get('cityManager.' + name));}
+        if (typeof name === 'string') {
+            this.cities.push(GOS.get('cityManager.' + name));
+        }
     } // end of createCity()
 
     // ======== cityHandler Methods =======
     setup() {
+        this.cityGraphics = [
+            loadImage('./Graphics/City Icon/City_logo.png'),
+            loadImage('./Graphics/City Icon/City_logo_dying.png'),
+            loadImage('./Graphics/City Icon/City_logo_extra_dying.png')
+        ]
+        console.log(this.cityGraphics)
         this.gameStart();
-        this.cityGraphics[0] = loadImage('./Graphics/City Icon/City_logo.png');
     }
 
-    gameStart(){ //upon game start, 2 cities must be initilized before we assign them trade
-    while (this.cities.length < 2) {
-        let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
-        this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
-        cityData.splice(cityDataIndex, 1);
-    } 
-    this.assignTrade();
-        
+    gameStart() { //upon game start, 2 cities must be initilized before we assign them trade
+        while (this.cities.length < 2) {
+            let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
+            this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
+            cityData.splice(cityDataIndex, 1);
+        }
+        this.assignTrade();
+
     }
 
     tryForCity() {
-        // if(Math.random()*1000 < this.counter/1000){
-            let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
-            this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
+        if (Math.random() * 1000 < this.counter / 1000) {
+            let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
+            this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
             cityData.splice(cityDataIndex, 1);
-            
+
             this.assignTrade();
-        this.counter = 0;
-        // } else{this.counter++;}
+            this.counter = 0;
+        } else { this.counter++; }
     }
 
     update() {
-        // if(cityData.length != 0){
-        // this.tryForCity();}
+        if (cityData.length != 0) {
+            this.tryForCity();
+        }
 
     }
 
