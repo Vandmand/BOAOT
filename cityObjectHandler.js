@@ -2,6 +2,7 @@ import { cityData } from './modules/cityData.js'
 import * as GXY from './modules/GXY-manager.js'
 const mapHeight = 2234; const mapWidth = 4500;
 let startDrag = false
+let difficulty = 2 //increase to make cities spawn further away from each other
 
 GOS.createNode('root', 'cityManager', 1, [], class cityManager{
     constructor(){
@@ -171,22 +172,21 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
         this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
         let city1 = cityData[cityDataIndex];
         cityData.splice(cityDataIndex, 1);
-        //sorts all cities in a new array in decending order acording to distance to city1:
-        let sortedDistance = [...cityData].sort((a,b) => dist(city1.x,city1.y,a.x,a.y) - dist(city1.x,city1.y,b.x,b.y))
-        let threeCloesetsCities = sortedDistance.slice(0, 3); //then takes the tree first elements of that array
+        //sorts all cities in decending order acording to distance to city1:
+        cityData.sort((a,b) => dist(city1.x,city1.y,a.x,a.y) - dist(city1.x,city1.y,b.x,b.y))
         //it then chooses a random of the 3 element and makes a city
-        cityDataIndex = Math.floor(Math.random()*(threeCloesetsCities.length-1));
-        this.createCity(threeCloesetsCities[cityDataIndex].x,threeCloesetsCities[cityDataIndex].y,threeCloesetsCities[cityDataIndex].name);
-        cityData.splice(cityData.findIndex((element) => element.name = threeCloesetsCities[cityDataIndex].name), 1) //removes the city from the original cityData array
+        cityDataIndex = Math.floor(Math.random()*difficulty);
+        this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
+        cityData.splice(cityDataIndex, 1);
 
     this.assignTrade();
         
     }
 
     tryForCity() {
-        if (Math.random() * 1000 < this.counter / 1000) {
-            let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
-            this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
+        if(Math.random()*1000 < this.counter/1000){
+            let cityDataIndex = Math.floor(Math.random()*difficulty);
+            this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
             cityData.splice(cityDataIndex, 1);
             this.citySoundEffect.play();
 
