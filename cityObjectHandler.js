@@ -3,11 +3,12 @@ import * as GXY from './modules/GXY-manager.js'
 const mapHeight = 2234; const mapWidth = 4500;
 let startDrag = false
 
-GOS.createNode('root', 'cityManager', 1, [], class cityManager {
-    constructor() {
-        this.cities = [];
-        this.counter = 0;
-        this.cityGraphics = []; //it's loaded in the city manager to reduce stress
+GOS.createNode('root', 'cityManager', 1, [], class cityManager{
+    constructor(){
+     this.cities = [];
+     this.counter = 0;
+     this.cityGraphics = []; //it's loaded in the city manager to reduce stress
+     this.citySoundEffect;
     }
     createCity(x, y, name, Graphics = this.cityGraphics) {
         GOS.createNode('cityManager', name, '1', [x, y, Graphics], class City {
@@ -22,8 +23,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
                 this.cityGraphics = Graphics;
                 this.visualDiameter = 50
                 this.state = 0
-
-                console.log(this.cityGraphics)
+                this.initialSize = 1; //used to make a simple iteration animation
 
                 this.nextExport = 0
                 this.neighbors = []
@@ -111,9 +111,11 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
             //====Visual methods====
             drawCity() {
                 strokeWeight(1);
-                if(this.cityGraphics){
-                    image(this.cityGraphics[this.state], GXY.transform(this.x, "x") - this.visualDiameter / 2, GXY.transform(this.y, "y") - this.visualDiameter / 2, this.visualDiameter, this.visualDiameter);
-                }
+                if (this.initialSize < this.visualDiameter){ //small animation for when the city spawns
+                    image(this.cityGraphics[this.state],GXY.transform(this.x,"x")-this.initialSize/2,GXY.transform(this.y,"y")-this.initialSize/2,this.initialSize,this.initialSize);
+                    this.initialSize ++;
+                } else {
+                    image(this.cityGraphics[this.state],GXY.transform(this.x,"x")-this.visualDiameter/2, GXY.transform(this.y,"y")-this.visualDiameter/2,this.visualDiameter,this.visualDiameter);}
             }
 
             displayInfo() {
@@ -131,9 +133,8 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
                 }
             }
             //====================
-            mouseOverCity() {
-                //    return dist(mouseX,mouseY,GXY.transform(this.x,"x"),GXY.transform(this.y,"y")) <= 25 ? true : false;
-                return dist(mouseX, mouseY, GXY.transform(this.x, "x"), GXY.transform(this.y, "y")) <= this.visualDiameter / 2 ? true : false;
+            mouseOverCity(){
+            return dist(mouseX,mouseY,GXY.transform(this.x,"x"),GXY.transform(this.y,"y")) <= this.visualDiameter/2 ? true : false;
 
             }
             supplyCity(tradeImport) {
@@ -161,16 +162,28 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
         ]
         console.log(this.cityGraphics)
         this.gameStart();
+        this.cityGraphics[0] = loadImage('./Graphics/City Icon/City_logo.png');
+        soundFormats('mp3');
+        this.citySoundEffect = loadSound('./Sound/Whoosh.mp3');
+        console.log(this.citySoundEffect);
     }
 
-    gameStart() { //upon game start, 2 cities must be initilized before we assign them trade
-        while (this.cities.length < 2) {
-            let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
-            this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
-            cityData.splice(cityDataIndex, 1);
-        }
-        this.assignTrade();
+    gameStart(){ //upon game start, 2 cities must be initilized before we assign them trade
+        //start city:
+        let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
+        this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
+        let city1 = cityData[cityDataIndex];
+        cityData.splice(cityDataIndex, 1);
+        //sorts all cities in a new array in decending order acording to distance to city1:
+        let sortedDistance = [...cityData].sort((a,b) => dist(city1.x,city1.y,a.x,a.y) - dist(city1.x,city1.y,b.x,b.y))
+        let threeCloesetsCities = sortedDistance.slice(0, 3); //then takes the tree first elements of that array
+        //it then chooses a random of the 3 element and makes a city
+        cityDataIndex = Math.floor(Math.random()*(threeCloesetsCities.length-1));
+        this.createCity(threeCloesetsCities[cityDataIndex].x,threeCloesetsCities[cityDataIndex].y,threeCloesetsCities[cityDataIndex].name);
+        cityData.splice(cityData.findIndex((element) => element.name = threeCloesetsCities[cityDataIndex].name), 1) //removes the city from the original cityData array
 
+    this.assignTrade();
+        
     }
 
     tryForCity() {
@@ -178,6 +191,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
             let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
             this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
             cityData.splice(cityDataIndex, 1);
+            this.citySoundEffect.play();
 
             this.assignTrade();
             this.counter = 0;

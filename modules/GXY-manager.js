@@ -9,21 +9,21 @@ return xy == 'x' ? coord+relativeX : coord+relativeY;
 export function moveWindow(){
     if(mouseX < 80){
         if(keyCode === SHIFT && keyIsPressed){
-            relativeX+=5;}
+            relativeX+=8;}
             else { relativeX+=2;}
     } else if (mouseX > windowWidth-80){
         if(keyCode === SHIFT && keyIsPressed){
-            relativeX-=5;}
+            relativeX-=8;}
             else { relativeX-=2;}
     }
     if (mouseY < 80 && relativeY < 0){
         if(keyCode === SHIFT && keyIsPressed){
-            relativeY+=5;}
+            relativeY+=8;}
             else { relativeY+=2;}
         
     } else if (mouseY > windowHeight-80 && relativeY > -1600){
         if(keyCode === SHIFT && keyIsPressed){
-            relativeY-=5;}
+            relativeY-=8;}
             else { relativeY-=2;}
         }
     }
