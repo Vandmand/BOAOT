@@ -3,7 +3,7 @@
 export let relativeX = 0; export let relativeY = 0;
 
 export function transform(coord, xy){ //turns the window x/y to a global x/y
-return xy == "x" ? coord+relativeX : coord+relativeY;
+return xy == 'x' ? coord+relativeX : coord+relativeY;
 } 
 
 export function moveWindow(){
