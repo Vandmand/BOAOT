@@ -3,6 +3,8 @@ import * as GXY from './modules/GXY-manager.js';
 
 document.body.style.overflow = 'hidden';
 
+window.money = 10000;
+
 GOS.createGameObject('./cityObjectHandler.js')
 GOS.createGameObject('./road.js')
 GOS.createGameObject('./mapHandler.js')
