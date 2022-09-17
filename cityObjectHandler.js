@@ -2,7 +2,7 @@ import { cityData } from './modules/cityData.js'
 import * as GXY from './modules/GXY-manager.js'
 const mapHeight = 2234; const mapWidth = 4500;
 let startDrag = false
-let difficulty = 2 //increase to make cities spawn further away from each other
+let difficulty = 3 //increase to make cities spawn further away from each other
 
 GOS.createNode('root', 'cityManager', 1, [], class cityManager{
     constructor(){
@@ -172,7 +172,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
         //sorts all cities in decending order acording to distance to city1:
         cityData.sort((a,b) => dist(city1.x,city1.y,a.x,a.y) - dist(city1.x,city1.y,b.x,b.y))
         //it then chooses a random of the 3 element and makes a city
-        cityDataIndex = Math.floor(Math.random()*difficulty);
+        cityDataIndex = Math.floor(Math.random()*2);
         this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
         cityData.splice(cityDataIndex, 1);
 
