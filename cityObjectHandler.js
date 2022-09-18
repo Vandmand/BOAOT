@@ -42,7 +42,6 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                         let depth = this.move(this.from);
                         if (depth != 0) {
                             setTimeout(() => {
-                                console.log('Delivered from ' + this.from.name + ' to ' + this.to.name);
                                 window.money += depth * 1000
                                 GOS.get('UI').earned = '+' + (depth * 1000)
                                 setTimeout(() => {
@@ -158,7 +157,6 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
             loadImage('./Graphics/City Icon/City_logo_dying.png'),
             loadImage('./Graphics/City Icon/City_logo_extra_dying.png')
         ]
-        console.log(this.cityGraphics)
         this.gameStart();
         this.cityGraphics[0] = loadImage('./Graphics/City Icon/City_logo.png');
         soundFormats('mp3');
