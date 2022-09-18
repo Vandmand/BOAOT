@@ -3,16 +3,18 @@ import * as GOS from './modules/gos-manager.js';
 //UI elements will be handled by this object
 GOS.createNode('root', 'UI', 3, [], class Map {
     constructor() {
-        this.UIX
-        this.UIY
-        this.earned = ''
-        this.game = true
+        this.UIX;
+        this.UIY;
+        this.earned = '';
+        this.game = true;
+        this.moneySymbol;
     }
 
 
     setup() {
-        this.UIX = windowWidth / 2
-        this.UIY = windowHeight - 30
+        this.UIX = windowWidth / 2;
+        this.UIY = windowHeight - 30;
+        this.moneySymbol = loadImage('./Graphics/Money Icon/Currency.png');
     }
 
     update() {
@@ -52,10 +54,10 @@ GOS.createNode('root', 'UI', 3, [], class Map {
     UIMoneyCounter() {
         fill(100, 120, 100);
         rectMode(CORNER)
-        rect(0, 0, 20, 40);
         fill(0);
         textSize(40);
         text(window.money + ' ' + this.earned, 30, 0, 1000, 80);
+        image(this.moneySymbol, 3, 3,30,30)
     }
 
     gameOver() {
