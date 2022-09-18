@@ -4,6 +4,7 @@ let roadInt = 0;
 GOS.createNode('root', 'roadManager', 0, [], class roadManager {
     constructor() {
         this.connection = undefined
+        this.errorSoundEffect
     }
     createRoad(city1, city2) {
         GOS.createNode('roadManager', 'road' + roadInt++, 2, [city1, city2], class Mono {
@@ -29,7 +30,12 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
             }
         })
     }
+
+    setup(){
+    this.errorSoundEffect = loadSound('./Sound/Error.mp3');
+    }
     addRoad(node) {
+        if(window.money > 0){
         if (this.connection) {
             if (node.name == this.connection.name) {
                 return
@@ -41,5 +47,8 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
             this.connection = node;
             this.createRoad(this.connection, { x: mouseX, y: mouseY })
         }
+    } 
+    else{this.errorSoundEffect.play();
     }
+}
 })
