@@ -8,6 +8,7 @@ GOS.createNode('root', 'UI', 3, [], class Map {
         this.earned = '';
         this.game = true;
         this.moneySymbol;
+        this.showGuide = true
     }
 
 
@@ -29,6 +30,7 @@ GOS.createNode('root', 'UI', 3, [], class Map {
         this.UIBackground();
         this.UILatestCityList();
         this.UIMoneyCounter();
+        this.UIguide();
     }
 
     UIBackground() {
@@ -58,6 +60,21 @@ GOS.createNode('root', 'UI', 3, [], class Map {
         textSize(40);
         text(window.money + ' ' + this.earned, 30, 0, 1000, 80);
         image(this.moneySymbol, 3, 3,30,30)
+    }
+    
+    UIguide(){
+        if(this.showGuide == true){
+            rectMode(CORNER);
+            fill(100);
+            rect(10,40,300,150);
+            fill(0);
+            textSize(20);
+            text('Click on cities using spacebar to make new connections, hover over cities to see import/exports keep cities supplied',10,45,300,200)
+            text('Click to hide',100,170);
+        }
+        if(mouseIsPressed && mouseX < 300  && mouseX > 10 && mouseY < 150  && mouseY > 40){
+            this.showGuide = false;
+        }
     }
 
     gameOver() {
