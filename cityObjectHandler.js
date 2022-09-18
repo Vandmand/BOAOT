@@ -84,7 +84,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 
                 if (this.timeSinceSupply > 4000) {
                     GOS.get('UI').game = false;
-                } else if(this.timeSinceSupply > 1500) {
+                } else if(this.timeSinceSupply > 1500 && this.timeSinceSupply < 3000) {
                     this.state = 1
                 } else if(this.timeSinceSupply > 3000) {
                     this.state = 2
@@ -159,6 +159,9 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
         ]
         this.gameStart();
         this.cityGraphics[0] = loadImage('./Graphics/City Icon/City_logo.png');
+        this.cityGraphics[1] = loadImage('./Graphics/City Icon/City_logo_dying.png');
+        this.cityGraphics[2] = loadImage('./Graphics/City Icon/City_logo_extra_dying.png');
+
         soundFormats('mp3');
         this.citySoundEffect = loadSound('./Sound/Whoosh.mp3');
     }
