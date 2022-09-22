@@ -32,7 +32,7 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
     }
 
     setup(){
-    this.errorSoundEffect = loadSound('./Sound/Error.mp3');
+    this.errorSoundEffect = loadSound('./assets/sound/Error.mp3');
     }
     addRoad(node) {
         if(window.money > 0){
@@ -40,7 +40,7 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
             if (node.name == this.connection.name) {
                 return
             } else {
-                GOS.get('roadManager.road' + (roadInt-1).toString()).finish(node)
+                GOS.get('roadManager.road' + (roadInt-1).toString()).finish(node);
                 this.connection = undefined;
             }
         } else {

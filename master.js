@@ -12,12 +12,13 @@ GOS.createGameObject('./UI-Handler.js')
 
 
 GOS.get('root').setup = () => {
-  createCanvas(windowWidth, windowHeight)
+  createCanvas(windowWidth, windowHeight);
+  soundFormats('mp3');
 }
 
 GOS.get('root').update = () => {
-GXY.moveWindow()
-background(182,219,246)
+GXY.moveWindow();
+background(182,219,246);
 }
 
 //temp function for debuggin'

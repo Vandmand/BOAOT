@@ -15,7 +15,7 @@ GOS.createNode('root', 'UI', 3, [], class UI {
     setup() {
         this.UIX = windowWidth / 2;
         this.UIY = windowHeight - 30;
-        this.moneySymbol = loadImage('./Graphics/Money Icon/Currency.png');
+        this.moneySymbol = loadImage('./assets/money icon/Currency.png');
     }
 
     update() {

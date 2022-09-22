@@ -1,7 +1,6 @@
 import { cityData } from './modules/cityData.js'
 import * as GXY from './modules/GXY-manager.js'
-const mapHeight = 2234;
-const mapWidth = 4500;
+
 let startDrag = false
 let difficulty = 3 //increase to make cities spawn further away from each other
 
@@ -155,14 +154,12 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
     // ======== cityHandler Methods =======
     setup() {
         this.cityGraphics = [
-            loadImage('./assets/City Icon/City_logo.png'),
-            loadImage('./assets/City Icon/City_logo_dying.png'),
-            loadImage('./assets/City Icon/City_logo_extra_dying.png')
+            loadImage('./assets/city icon/City_logo.png'),
+            loadImage('./assets/city icon/City_logo_dying.png'),
+            loadImage('./assets/city icon/City_logo_extra_dying.png')
         ]
         this.gameStart();
-        this.cityGraphics[0] = loadImage('./assets/City Icon/City_logo.png');
-        soundFormats('mp3');
-        this.citySoundEffect = loadSound('./Sound/Whoosh.mp3');
+        this.citySoundEffect = loadSound('./assets/sound/Whoosh.mp3');
     }
 
     gameStart() { //upon game start, 2 cities must be initilized before we assign them trade

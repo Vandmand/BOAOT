@@ -45,7 +45,6 @@ function insertNode(node) {
     const leftSide = oldChildren.filter(entry => { return entry[1].priority <= node.priority ? true : false });
     const rightSide = oldChildren.filter(entry => { return entry[1].priority > node.priority ? true : false });
     parent.children = new Map([].concat(leftSide, [[node.name, node]], rightSide));
-
 }
 
 export function createClass(customClass) {
@@ -58,7 +57,7 @@ export function createClass(customClass) {
             this.priority = priority; // Node priority. Defines which sibling is read first
             this.level = level; // Defines nodes level in tree
             this.freeze = false; // Freeze node affects draw()
-            this.localCoordinates = {} // Defines coordinates of local object
+            this.localCoordinates = {}; // Defines coordinates of local object
 
             this.init = () => {
                 if (initialized) {
@@ -66,7 +65,7 @@ export function createClass(customClass) {
                         super.setup();
                     }
                 }
-                delete (this.init)
+                delete (this.init);
             }
             this.init();
         }
