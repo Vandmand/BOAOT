@@ -3,7 +3,7 @@ GOS.createNode('root', 'Map', -1, [], class Map{
     this.worldMap;
  }
  setup(){
-    this.worldMap = loadImage('./Graphics/World Map/4500px-World map.png');
+    this.worldMap = loadImage('./assets/World Map/4500px-World map.png');
  }
 
  update(){

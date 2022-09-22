@@ -2,6 +2,8 @@
 // = Game Object Manager = Elias Kulmbak = v 3.0.0
 // ===========================================================
 
+let initialized = false;
+
 // ========== CLASSES ===========
 
 // Custom error class. Used to make custom errors only used in the renderer.
@@ -12,20 +14,9 @@ class RenderError extends Error {
     }
 }
 
-// Node class contains all information for node
-export class Node {
-    constructor(name, parent, priority, level) {
-        this.name = name;
-
-        this.parent = parent; // The node's parent. For easier access through the tree
-        this.children = new Map(); // Data of the node. Contains other nodes and leafs
-        this.priority = priority; // Node priority. Defines which sibling is read first
-        this.level = level; // Defines nodes level in tree
-    }
-
-}
 // Varible stores the entire node tree
-export const objectList = new Node('ROOT', 'NONE', 0, 0) 
+const rootClass = createClass(class Root { constructor() { } })
+export const objectList = new rootClass('ROOT', 'NONE', -Infinity, 0, [])
 
 // ========== Public Methods =========
 
@@ -57,11 +48,8 @@ function insertNode(node) {
 
 }
 
-// Create a node
-export function createNode(path, name, priority, args, classBody) {
-    const parent = get(path);
-    const level = path.toUpperCase() == 'ROOT' ? 1 : 1 + path.split('.').length;
-    const customClass = class Node extends classBody {
+export function createClass(customClass) {
+    const newClass = class Node extends customClass {
         constructor(name, parent, priority, level, args) {
             super(...args)
             this.name = name;
@@ -69,19 +57,29 @@ export function createNode(path, name, priority, args, classBody) {
             this.children = new Map(); // Data of the node. Contains other nodes and leafs
             this.priority = priority; // Node priority. Defines which sibling is read first
             this.level = level; // Defines nodes level in tree
-            this.parentArgs
+            this.freeze = false; // Freeze node affects draw()
+            this.localCoordinates = {} // Defines coordinates of local object
+
             this.init = () => {
-                if(initialized){
-                    if(super.setup){
+                if (initialized) {
+                    if (super.setup) {
                         super.setup();
                     }
                 }
-                delete(this.init)
+                delete (this.init)
             }
             this.init();
         }
     }
-    insertNode(new customClass(name,parent,priority,level,args));
+    return newClass
+}
+
+// Create a node
+export function createNode(path, name, priority, args, classBody) {
+    const parent = get(path);
+    const level = path.toUpperCase() == 'ROOT' ? 1 : 1 + path.split('.').length;
+    const customClass = createClass(classBody)
+    insertNode(new customClass(name, parent, priority, level, args));
 }
 
 // Delete a node
@@ -91,27 +89,34 @@ export function deleteNode(path) {
 }
 
 window.draw = (node = objectList) => {
-    push();
-    // this shitshow..... smh
-    const objectMethods = node.name.toUpperCase() == "ROOT" ? Object.keys(node).filter(key => typeof node[key] === 'function') : Object.getOwnPropertyNames(node.__proto__.__proto__).filter(key => typeof node[key] === 'function')
-    if (objectMethods.indexOf('update') != -1) {
-        node.update();
+    if (!node.freeze) {
+        push();
+
+        const ownMethods = Object.keys(node);
+        const parentMethods = Object.getOwnPropertyNames(node.__proto__.__proto__);
+        const objectMethods = ownMethods.concat(parentMethods).filter(key => typeof node[key] === 'function')
+
+        if (objectMethods.indexOf('update') != -1) {
+            node.update();
+        }
+        node.children.forEach(child => window.draw(child))
+        pop();
     }
-    node.children.forEach(child => window.draw(child))
-    pop();
 }
 
-let initialized = false;
-
 window.setup = (node = objectList) => {
-    // this shitshow..... smh
-    const objectMethods = node.name.toUpperCase() == "ROOT" ? Object.keys(node).filter(key => typeof node[key] === 'function') : Object.getOwnPropertyNames(node.__proto__.__proto__).filter(key => typeof node[key] === 'function')
+
+    const ownMethods = Object.keys(node);
+    const parentMethods = Object.getOwnPropertyNames(node.__proto__.__proto__);
+    const objectMethods = ownMethods.concat(parentMethods).filter(key => typeof node[key] === 'function')
+
     if (objectMethods.indexOf('setup') != -1) {
         node.setup();
     }
     node.children.forEach(child => window.setup(child))
     initialized = true
 }
+
 
 // ========= OTHER ESSENSIALS
 
@@ -122,6 +127,6 @@ export function createGameObject(src) {
     document.body.appendChild(js);
 }
 
-// export function childValues(parent){
-// return Object.values(Object.values(GOS.get(parent))[Object.keys(GOS.get('cityManager')).indexOf('children')])
-// }
+export function setRefference(path) {
+    
+}

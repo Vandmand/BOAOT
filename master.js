@@ -12,7 +12,7 @@ GOS.createGameObject('./UI-Handler.js')
 
 
 GOS.get('root').setup = () => {
-  createCanvas(windowWidth,windowHeight);
+  createCanvas(windowWidth, windowHeight)
 }
 
 GOS.get('root').update = () => {

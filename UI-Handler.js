@@ -1,7 +1,7 @@
 import * as GOS from './modules/gos-manager.js';
 
 //UI elements will be handled by this object
-GOS.createNode('root', 'UI', 3, [], class Map {
+GOS.createNode('root', 'UI', 3, [], class UI {
     constructor() {
         this.UIX
         this.UIY

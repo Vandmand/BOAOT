@@ -1,15 +1,16 @@
 import { cityData } from './modules/cityData.js'
 import * as GXY from './modules/GXY-manager.js'
-const mapHeight = 2234; const mapWidth = 4500;
+const mapHeight = 2234;
+const mapWidth = 4500;
 let startDrag = false
 let difficulty = 3 //increase to make cities spawn further away from each other
 
-GOS.createNode('root', 'cityManager', 1, [], class cityManager{
-    constructor(){
-     this.cities = [];
-     this.counter = 0;
-     this.cityGraphics = []; //it's loaded in the city manager to reduce stress
-     this.citySoundEffect;
+GOS.createNode('root', 'cityManager', 1, [], class cityManager {
+    constructor() {
+        this.cities = [];
+        this.counter = 0;
+        this.cityGraphics = []; //it's loaded in the city manager to reduce stress
+        this.citySoundEffect;
     }
     createCity(x, y, name, Graphics = this.cityGraphics) {
         GOS.createNode('cityManager', name, '1', [x, y, Graphics], class City {
@@ -81,12 +82,12 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                     startDrag = false
                 }
 
-                
+
                 if (this.timeSinceSupply > 4000) {
                     GOS.get('UI').game = false;
-                } else if(this.timeSinceSupply > 1500) {
+                } else if (this.timeSinceSupply > 1500) {
                     this.state = 1
-                } else if(this.timeSinceSupply > 3000) {
+                } else if (this.timeSinceSupply > 3000) {
                     this.state = 2
                 } else {
                     this.state = 0
@@ -111,11 +112,12 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
             //====Visual methods====
             drawCity() {
                 strokeWeight(1);
-                if (this.initialSize < this.visualDiameter){ //small animation for when the city spawns
-                    image(this.cityGraphics[this.state],GXY.transform(this.x,"x")-this.initialSize/2,GXY.transform(this.y,"y")-this.initialSize/2,this.initialSize,this.initialSize);
-                    this.initialSize ++;
+                if (this.initialSize < this.visualDiameter) { //small animation for when the city spawns
+                    image(this.cityGraphics[this.state], GXY.transform(this.x, "x") - this.initialSize / 2, GXY.transform(this.y, "y") - this.initialSize / 2, this.initialSize, this.initialSize);
+                    this.initialSize++;
                 } else {
-                    image(this.cityGraphics[this.state],GXY.transform(this.x,"x")-this.visualDiameter/2, GXY.transform(this.y,"y")-this.visualDiameter/2,this.visualDiameter,this.visualDiameter);}
+                    image(this.cityGraphics[this.state], GXY.transform(this.x, "x") - this.visualDiameter / 2, GXY.transform(this.y, "y") - this.visualDiameter / 2, this.visualDiameter, this.visualDiameter);
+                }
             }
 
             displayInfo() {
@@ -133,8 +135,8 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
                 }
             }
             //====================
-            mouseOverCity(){
-            return dist(mouseX,mouseY,GXY.transform(this.x,"x"),GXY.transform(this.y,"y")) <= this.visualDiameter/2 ? true : false;
+            mouseOverCity() {
+                return dist(mouseX, mouseY, GXY.transform(this.x, "x"), GXY.transform(this.y, "y")) <= this.visualDiameter / 2 ? true : false;
             }
             supplyCity(tradeImport) {
                 if (this.tradeImport === tradeImport) {
@@ -153,37 +155,37 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager{
     // ======== cityHandler Methods =======
     setup() {
         this.cityGraphics = [
-            loadImage('./Graphics/City Icon/City_logo.png'),
-            loadImage('./Graphics/City Icon/City_logo_dying.png'),
-            loadImage('./Graphics/City Icon/City_logo_extra_dying.png')
+            loadImage('./assets/City Icon/City_logo.png'),
+            loadImage('./assets/City Icon/City_logo_dying.png'),
+            loadImage('./assets/City Icon/City_logo_extra_dying.png')
         ]
         this.gameStart();
-        this.cityGraphics[0] = loadImage('./Graphics/City Icon/City_logo.png');
+        this.cityGraphics[0] = loadImage('./assets/City Icon/City_logo.png');
         soundFormats('mp3');
         this.citySoundEffect = loadSound('./Sound/Whoosh.mp3');
     }
 
-    gameStart(){ //upon game start, 2 cities must be initilized before we assign them trade
+    gameStart() { //upon game start, 2 cities must be initilized before we assign them trade
         //start city:
-        let cityDataIndex = Math.floor(Math.random()*(cityData.length-1));
-        this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
+        let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
+        this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
         let city1 = cityData[cityDataIndex];
         cityData.splice(cityDataIndex, 1);
         //sorts all cities in decending order acording to distance to city1:
-        cityData.sort((a,b) => dist(city1.x,city1.y,a.x,a.y) - dist(city1.x,city1.y,b.x,b.y))
+        cityData.sort((a, b) => dist(city1.x, city1.y, a.x, a.y) - dist(city1.x, city1.y, b.x, b.y))
         //it then chooses a random of the 3 element and makes a city
-        cityDataIndex = Math.floor(Math.random()*2);
-        this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
+        cityDataIndex = Math.floor(Math.random() * 2);
+        this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
         cityData.splice(cityDataIndex, 1);
 
-    this.assignTrade();
-        
+        this.assignTrade();
+
     }
 
     tryForCity() {
-        if(Math.random()*1000 < this.counter/1000){
-            let cityDataIndex = Math.floor(Math.random()*difficulty);
-            this.createCity(cityData[cityDataIndex].x,cityData[cityDataIndex].y,cityData[cityDataIndex].name);
+        if (Math.random() * 1000 < this.counter / 1000) {
+            let cityDataIndex = Math.floor(Math.random() * difficulty);
+            this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
             cityData.splice(cityDataIndex, 1);
             this.citySoundEffect.play();
 
