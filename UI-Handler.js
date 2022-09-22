@@ -3,16 +3,19 @@ import * as GOS from './modules/gos-manager.js';
 //UI elements will be handled by this object
 GOS.createNode('root', 'UI', 3, [], class UI {
     constructor() {
-        this.UIX
-        this.UIY
-        this.earned = ''
-        this.game = true
+        this.UIX;
+        this.UIY;
+        this.earned = '';
+        this.game = true;
+        this.moneySymbol;
+        this.showGuide = true
     }
 
 
     setup() {
-        this.UIX = windowWidth / 2
-        this.UIY = windowHeight - 30
+        this.UIX = windowWidth / 2;
+        this.UIY = windowHeight - 30;
+        this.moneySymbol = loadImage('./Graphics/Money Icon/Currency.png');
     }
 
     update() {
@@ -27,6 +30,7 @@ GOS.createNode('root', 'UI', 3, [], class UI {
         this.UIBackground();
         this.UILatestCityList();
         this.UIMoneyCounter();
+        this.UIguide();
     }
 
     UIBackground() {
@@ -52,10 +56,25 @@ GOS.createNode('root', 'UI', 3, [], class UI {
     UIMoneyCounter() {
         fill(100, 120, 100);
         rectMode(CORNER)
-        rect(0, 0, 20, 40);
         fill(0);
         textSize(40);
         text(window.money + ' ' + this.earned, 30, 0, 1000, 80);
+        image(this.moneySymbol, 3, 3,30,30)
+    }
+    
+    UIguide(){
+        if(this.showGuide == true){
+            rectMode(CORNER);
+            fill(100);
+            rect(10,40,300,150);
+            fill(0);
+            textSize(20);
+            text('Click on cities using spacebar to make new connections, hover over cities to see import/exports keep cities supplied',10,45,300,200)
+            text('Click to hide',100,170);
+        }
+        if(mouseIsPressed && mouseX < 300  && mouseX > 10 && mouseY < 150  && mouseY > 40){
+            this.showGuide = false;
+        }
     }
 
     gameOver() {
