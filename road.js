@@ -9,7 +9,7 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
     createRoad(city1, city2) {
         GOS.createNode('roadManager', 'road' + roadInt++, 2, [city1, city2], class Mono {
             constructor(city1) {
-                this.city1 = city1
+                this.city1 = city1;
                 this.city2;
             }
             update() {
@@ -19,8 +19,8 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
             }
             finish(city2) {
                 this.city2 = city2
-                if (city1.neighbors.indexOf(this.city2.name) != -1) {
-                    GOS.deleteNode('roadManager.' + this.name)
+                if (city1.neighbors.indexOf(this.city2.id) != -1) {
+                    GOS.deleteNode('roadManager.' + this.id)
                 } else {
                     this.city2 = city2
                     city1.neighbors.push(this.city2)
@@ -37,7 +37,7 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
     addRoad(node) {
         if(window.money > 0){
         if (this.connection) {
-            if (node.name == this.connection.name) {
+            if (node.id == this.connection.id) {
                 return
             } else {
                 GOS.get('roadManager.road' + (roadInt-1).toString()).finish(node);

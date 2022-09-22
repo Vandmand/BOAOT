@@ -7,7 +7,7 @@ let initialized = false;
 // ========== CLASSES ===========
 
 // Custom error class. Used to make custom errors only used in the renderer.
-class RenderError extends Error {
+class GOSError extends Error {
     constructor(msg) {
         super(msg);
         this.name = "GOS-Error";
@@ -29,7 +29,7 @@ export function get(path) {
             try {
                 currNode = currNode.children.get(nodeName)
             } catch (error) {
-                throw new RenderError('Invalid path: ' + error);
+                throw new GOSError('Invalid path: ' + error);
             }
         });
         return currNode
@@ -44,20 +44,21 @@ function insertNode(node) {
     const oldChildren = [...parent.children];
     const leftSide = oldChildren.filter(entry => { return entry[1].priority <= node.priority ? true : false });
     const rightSide = oldChildren.filter(entry => { return entry[1].priority > node.priority ? true : false });
-    parent.children = new Map([].concat(leftSide, [[node.name, node]], rightSide));
+    parent.children = new Map([].concat(leftSide, [[node.id, node]], rightSide));
 }
 
-export function createClass(customClass) {
+function createClass(customClass) {
     const newClass = class Node extends customClass {
-        constructor(name, parent, priority, level, args) {
+        constructor(id, parent, priority, level, args) {
             super(...args)
-            this.name = name;
+            this.id = id;
             this.parent = parent; // The node's parent. For easier access through the tree
             this.children = new Map(); // Data of the node. Contains other nodes and leafs
             this.priority = priority; // Node priority. Defines which sibling is read first
             this.level = level; // Defines nodes level in tree
             this.freeze = false; // Freeze node affects draw()
-            this.localCoordinates = {}; // Defines coordinates of local object
+            this.localCoordinates = {x:0,y:0}; // Defines coordinates of local object
+            this.useLocalCoordinates = false // Defines whether or not to use local or global coordinates
 
             this.init = () => {
                 if (initialized) {
@@ -74,17 +75,17 @@ export function createClass(customClass) {
 }
 
 // Create a node
-export function createNode(path, name, priority, args, classBody) {
+export function createNode(path, id, priority, args, classBody) {
     const parent = get(path);
     const level = path.toUpperCase() == 'ROOT' ? 1 : 1 + path.split('.').length;
     const customClass = createClass(classBody)
-    insertNode(new customClass(name, parent, priority, level, args));
+    insertNode(new customClass(id, parent, priority, level, args));
 }
 
 // Delete a node
 export function deleteNode(path) {
     const node = get(path);
-    node.parent.children.delete(node.name);
+    node.parent.children.delete(node.id);
 }
 
 window.draw = (node = objectList) => {

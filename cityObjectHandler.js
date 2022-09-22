@@ -11,16 +11,16 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
         this.cityGraphics = []; //it's loaded in the city manager to reduce stress
         this.citySoundEffect;
     }
-    createCity(x, y, name, Graphics = this.cityGraphics) {
-        GOS.createNode('cityManager', name, '1', [x, y, Graphics], class City {
-            constructor(x, y, Graphics, name) {
+    createCity(x, y, id, Graphics = this.cityGraphics) {
+        GOS.createNode('cityManager', id, '1', [x, y, Graphics], class City {
+            constructor(x, y, Graphics, id) {
                 this.x = x;
                 this.y = y;
-                this.name = name;
+                this.id = id;
                 this.tradeExport;
                 this.tradeImport;
                 this.timeSinceSupply = 0;
-                this.isReal = typeof name === 'string' ? false : true;
+                this.isReal = typeof id === 'string' ? false : true;
                 this.cityGraphics = Graphics;
                 this.visualDiameter = 50
                 this.state = 0
@@ -30,7 +30,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
                 this.neighbors = []
             }
             createPacket(from, to) {
-                GOS.createNode('root', 'packetFrom' + from.name + 'To' + to.name, -1, [from, to], class Packet {
+                GOS.createNode('root', 'packetFrom' + from.id + 'To' + to.id, -1, [from, to], class Packet {
                     constructor(from, to) {
                         this.from = from
                         this.here = [from]
@@ -48,7 +48,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
                                     this.to.timeSinceSupply = 0;
                                     GOS.get('UI').earned = ''
                                 }, 2000)
-                                GOS.deleteNode(this.name);
+                                GOS.deleteNode(this.id);
                             }, depth * 1000)
                         }
                     }
@@ -58,10 +58,10 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
                         } else {
                             node.neighbors.forEach(neighbor => {
                                 this.i++
-                                if (neighbor.name == this.to.name) {
+                                if (neighbor.id == this.to.id) {
                                     return this.i;
-                                } else if (this.here.indexOf(neighbor.name) == -1) {
-                                    this.here.push(neighbor.name);
+                                } else if (this.here.indexOf(neighbor.id) == -1) {
+                                    this.here.push(neighbor.id);
                                     this.move(neighbor);
                                 }
                                 this.i--
@@ -127,10 +127,10 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
                     let tempY = GXY.transform(this.y, "y")
                     line(tempX, tempY - 25, tempX, tempY - 50);
                     rect(tempX, tempY - 50 - 6.25, 200, 25 + 12.5)
-                    let ex = typeof this.tradeExport === 'object' ? this.tradeExport.name : 'None';
-                    let im = typeof this.tradeImport === 'object' ? this.tradeImport.name : 'None';
+                    let ex = typeof this.tradeExport === 'object' ? this.tradeExport.id : 'None';
+                    let im = typeof this.tradeImport === 'object' ? this.tradeImport.id : 'None';
                     text('export: ' + ex + ' | import: ' + im, tempX, tempY - 50);
-                    text(this.name, tempX, tempY - 50 - 25 / 2, this.visualDiameter);
+                    text(this.id, tempX, tempY - 50 - 25 / 2, this.visualDiameter);
                 }
             }
             //====================
@@ -146,8 +146,8 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
                 return this.tradeExport
             }
         })
-        if (typeof name === 'string') {
-            this.cities.push(GOS.get('cityManager.' + name));
+        if (typeof id === 'string') {
+            this.cities.push(GOS.get('cityManager.' + id));
         }
     } // end of createCity()
 
@@ -166,6 +166,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
         //start city:
         let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
         this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
+
         let city1 = cityData[cityDataIndex];
         cityData.splice(cityDataIndex, 1);
         //sorts all cities in decending order acording to distance to city1:
@@ -199,6 +200,7 @@ GOS.createNode('root', 'cityManager', 1, [], class cityManager {
     }
 
     assignTrade() { //assigns import and export in pairs
+        console.log(this.cities)
         let i = 0;
         while (typeof this.cities[i].tradeExport !== 'undefined' && this.cities.length - 1 > i) { i++; }
         if (this.cities.length - 1 >= i + 1) {

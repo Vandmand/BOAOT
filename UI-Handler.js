@@ -48,7 +48,7 @@ GOS.createNode('root', 'UI', 3, [], class UI {
         fill(0);
         textSize(20)
         for (let i = 0; i < last3Cities.length; i++) {
-            text(last3Cities[i].name, this.UIX + 200, this.UIY - 13 + 20 * i);
+            text(last3Cities[i].id, this.UIX + 200, this.UIY - 13 + 20 * i);
 
         }
     }
