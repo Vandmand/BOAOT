@@ -42,7 +42,6 @@ class Emitter {
      * @param  {Function} callback - Callback function
      */
 
-
     addListener(callback) {
         if (this.toggle) {
             callback();
@@ -50,6 +49,11 @@ class Emitter {
             this.listeners.push(callback);
         }
     }
+
+    /**
+     * @param  {Boolean} state - Toggle emitters state
+     */
+
     set(state) {
         this.toggle = state;
     }
@@ -74,13 +78,21 @@ class Node {
         this.level = level;
         this.freeze = false;
     }
+    method(){
+        return true
+    }
 }
 
 const builtInModules = {
     Position: class Position {
         constructor() {
-            this.x;
-            this.y;
+            this.globalPosition = false;
+            this.localX = 0;
+            this.localY = 0;
+        }
+        get x() {
+            if(this.globalPosition) return this.localX;
+            return this.localX + this.node.parent.Position.x;
         }
 
     }
@@ -92,6 +104,10 @@ const builtInModules = {
  * @const {Object}
  */
 export const objectList = new Node('Root', null, -Infinity, 0);
+
+objectList.freeze = true;
+objectList.Position = {x: 0, y: 0}
+initialized.addListener(() => {objectList.freeze = false;})
 
 
 /**
@@ -150,14 +166,16 @@ function insertNode(node) {
 export function addModule(node, args, module) {
     const allModules = Object.keys(builtInModules);
     let Module;
-
+    
     if (allModules.indexOf(module) != -1) {
         Module = builtInModules[module];
     } else {
         Module = module;
     }
 
-    node[Module.name] = new Module(...args)
+    node[Module.name] = new Module(...args);
+    node[Module.name].node = node;
+    console.log(node[Module.name].node)
 
     if (node[Module.name].setup) initialized.addListener(() => node[Module.name].setup());
 }
@@ -179,14 +197,12 @@ export function createNode(path, id, priority, args, defaultModule) {
     const level = path == 'Root' ? 1 : 1 + path.split('.').length;
 
     const Base = new Node(id, parent, priority, level);
-    addModule(Base, [], 'Position');
+    addModule(Base, [], 'Position')
 
-    const Default = new defaultModule(...args);
-    console.log(Default.__proto__.setup);
+    const DefaultModule = new defaultModule(...args);
+    const DefaultExtendBase = Object.assign(DefaultModule, Base);
 
-    const DefaultExtendBase = Object.assign(Base, Default);
-
-    if (DefaultExtendBase.setup) initialized.addListener(() => { DefaultExtendBase.setup(); })
+    if (DefaultExtendBase.setup) initialized.addListener(() => {DefaultExtendBase.setup(); })
 
     insertNode(DefaultExtendBase);
 }
@@ -206,14 +222,12 @@ export function deleteNode(path) {
  */
 
 window.draw = (node = objectList) => {
-    if (node.freeze) return;
+    if (node.freeze) {return;}
 
     push();
-    const ownMethods = Object.keys(node);
-    const objectMethods = ownMethods.filter((key) => typeof node[key] === 'function');
 
     // If update exist
-    if (objectMethods.indexOf('update') !== -1) node.update();
+    if (node.update) {node.update()};
 
     // Repeat for all children
     node.children.forEach((child) => window.draw(child));
@@ -251,7 +265,9 @@ export function getIndex(name) {
 // debug
 
 class Debugger {
-    constructor() { }
+    constructor() {
+        this.drawValues = [];
+    }
     createSimple(path) {
         createNode(path, getIndex('debugSimple'), 4, [], class debugSimple {
             constructor() { }
@@ -270,6 +286,12 @@ class Debugger {
                 circle(this.x, this.y, 100)
             }
         });
+    }
+    addDrawValue(val){
+        this.drawValues.unshift(val);
+        if(this.drawValues.length > 20){
+            this.drawValues.pop();
+        }
     }
 }
 

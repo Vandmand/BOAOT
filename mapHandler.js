@@ -6,7 +6,8 @@ GOS.createNode('Game', 'Map', -1, [], class Map {
       this.worldMap = loadImage('./assets/world map/4500px-World map.png');
    }
    update() {
-      image(this.worldMap, this.x, this.y);
+      GOS.debug.addDrawValue(this);
+      image(this.worldMap, this.Position.x, this.Position.y);
    }
 })
 
