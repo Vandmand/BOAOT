@@ -44,13 +44,13 @@ class Emitter {
 
 
     addListener(callback) {
-        if(this.toggle){
+        if (this.toggle) {
             callback();
         } else {
             this.listeners.push(callback);
         }
     }
-    set(state){
+    set(state) {
         this.toggle = state;
     }
 }
@@ -73,13 +73,6 @@ class Node {
         this.priority = priority;
         this.level = level;
         this.freeze = false;
-
-        this.init = () => {
-            if (initialized && super.setup !== undefined) super.setup();
-
-            delete this.init;
-        }
-        this.init();
     }
 }
 
@@ -92,6 +85,7 @@ const builtInModules = {
 
     }
 }
+
 
 /**
  * Root reference for tree
@@ -124,7 +118,7 @@ export function get(path) {
 
 /**
  * Inserts node into the tree accounting for priority
- * @param  {Object} node - Node object to insert
+ * @param  {Node} node - Node object to insert
  */
 
 function insertNode(node) {
@@ -188,6 +182,8 @@ export function createNode(path, id, priority, args, defaultModule) {
     addModule(Base, [], 'Position');
 
     const Default = new defaultModule(...args);
+    console.log(Default.__proto__.setup);
+
     const DefaultExtendBase = Object.assign(Base, Default);
 
     if (DefaultExtendBase.setup) initialized.addListener(() => { DefaultExtendBase.setup(); })
@@ -206,27 +202,25 @@ export function deleteNode(path) {
 }
 
 /**
- * @param  {} node=objectList
+ * @param  {} node
  */
 
 window.draw = (node = objectList) => {
-    if (!node.freeze) {
-        // Make all p5 rendering functions temporary: See p5js.org/reference for reference
-        push();
+    if (node.freeze) return;
 
-        // Get all the methods of object
-        const ownMethods = Object.keys(node);
-        const objectMethods = ownMethods.filter((key) => typeof node[key] === 'function');
+    push();
+    const ownMethods = Object.keys(node);
+    const objectMethods = ownMethods.filter((key) => typeof node[key] === 'function');
 
-        // If update exist
-        if (objectMethods.indexOf('update') !== -1) node.update();
+    // If update exist
+    if (objectMethods.indexOf('update') !== -1) node.update();
 
-        // Repeat for all children
-        node.children.forEach((child) => window.draw(child));
+    // Repeat for all children
+    node.children.forEach((child) => window.draw(child));
 
-        // Revert to before push
-        pop();
-    }
+    // Revert to before push
+    pop();
+
 }
 
 
@@ -244,8 +238,7 @@ export function createGameObject(src) {
     document.body.appendChild(js)
 }
 
-let indexedNames = {}
-
+const indexedNames = {};
 export function getIndex(name) {
     if (indexedNames[name] != undefined) {
         return name + indexedNames[name]++;
