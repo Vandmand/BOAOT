@@ -5,29 +5,54 @@ document.body.style.overflow = 'hidden';
 
 window.money = 5000;
 
-GOS.createGameObject('./cityObjectHandler.js')
-GOS.createGameObject('./road.js')
-GOS.createGameObject('./mapHandler.js')
-GOS.createGameObject('./UI-Handler.js')
+GOS.createNode('Root', 'Game', 0, [], class Game { 
+  constructor() { } 
+  // update(){
+  //   if(mouseX < 80){
+  //       if(keyCode === SHIFT && keyIsPressed){
+  //           this.x+=8;}
+  //           else { this.x+=2;}
+  //   } else if (mouseX > windowWidth-80){
+  //       if(keyCode === SHIFT && keyIsPressed){
+  //           this.x-=8;}
+  //           else { this.x-=2;}
+  //   }
+  //   // if (mouseY < 80 && relativeY < 0){
+  //   //     if(keyCode === SHIFT && keyIsPressed){
+  //   //         relativeY+=8;}
+  //   //         else { relativeY+=2;}
+        
+  //   // } else if (mouseY > windowHeight-80 && relativeY > -1600){
+  //   //     if(keyCode === SHIFT && keyIsPressed){
+  //   //         relativeY-=8;}
+  //   //         else { relativeY-=2;}
+  //   //     }
+  //   }
+});
+// GOS.createNode('Root', 'UI', 1, [], class UI { constructor() { } })
 
-
-GOS.get('root').setup = () => {
-  createCanvas(windowWidth, windowHeight);
+GOS.initialized.addListener(() => {
+  createCanvas(windowWidth,windowHeight);
   soundFormats('mp3');
+});
+
+GOS.get('Root').update = () => {
+  GXY.moveWindow();
+  background(182, 219, 246);
 }
 
-GOS.get('root').update = () => {
-GXY.moveWindow();
-background(182,219,246);
-}
+GOS.createGameObject('./cities/cityManager.js');
+GOS.createGameObject('./road.js');
+GOS.createGameObject('./mapHandler.js');
+GOS.createGameObject('./UI-Handler.js');
 
 //temp function for debuggin'
-window.newC = function(){
-  GOS.get('cityManager').tryForCity();
+window.newC = function () {
+  GOS.get('Game.CityManager').tryForCity();
 }
 
-window.mouseClicked = function(){
-  console.log(GXY.transform(-mouseX,"x"),GXY.transform(-mouseY,"y"))
+window.mouseClicked = function () {
+  console.log(GXY.transform(-mouseX, "x"), GXY.transform(-mouseY, "y"))
 }
 
 

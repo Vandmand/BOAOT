@@ -1,7 +1,7 @@
 import * as GXY from './modules/GXY-manager.js'
 
 let roadInt = 0;
-GOS.createNode('root', 'roadManager', 0, [], class roadManager {
+GOS.createNode('Root', 'roadManager', 0, [], class roadManager {
     constructor() {
         this.connection = undefined
         this.errorSoundEffect
@@ -45,7 +45,7 @@ GOS.createNode('root', 'roadManager', 0, [], class roadManager {
             }
         } else {
             this.connection = node;
-            this.createRoad(this.connection, { x: mouseX, y: mouseY })
+            this.createRoad(this.connection, { x: mouseX, y: mouseY });
         }
     } 
     else{this.errorSoundEffect.play();

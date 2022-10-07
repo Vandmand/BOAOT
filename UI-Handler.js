@@ -1,14 +1,14 @@
 import * as GOS from './modules/gos-manager.js';
 
 //UI elements will be handled by this object
-GOS.createNode('root', 'UI', 3, [], class UI {
+GOS.createNode('Root', 'UI', 3, [], class UI {
     constructor() {
         this.UIX;
         this.UIY;
         this.earned = '';
         this.game = true;
         this.moneySymbol;
-        this.showGuide = true
+        this.showGuide = true;
     }
 
 
@@ -44,7 +44,7 @@ GOS.createNode('root', 'UI', 3, [], class UI {
         fill(200);
         rect(this.UIX + 250, this.UIY, 120, 60) // background for the citylist
         let last3Cities = [];
-        last3Cities = GOS.get('cityManager').cities.slice(-3)
+        last3Cities = GOS.get('Game.CityManager').cities.slice(-3)
         fill(0);
         textSize(20)
         for (let i = 0; i < last3Cities.length; i++) {

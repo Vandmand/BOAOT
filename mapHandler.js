@@ -1,4 +1,4 @@
-GOS.createNode('root', 'Map', -1, [], class Map{
+GOS.createNode('Game', 'Map', -1, [], class Map{
  constructor(){
     this.worldMap;
  }
@@ -7,10 +7,7 @@ GOS.createNode('root', 'Map', -1, [], class Map{
  }
 
  update(){
-    image(this.worldMap, GXY.transform(0,"x"), GXY.transform(0,"y"));
+    image(this.worldMap, this.x, this.y);
  }
-
-
-
 })
 

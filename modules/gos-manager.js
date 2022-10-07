@@ -1,132 +1,283 @@
 // ===========================================================
-// = Game Object Manager = Elias Kulmbak = v 3.0.0
+// = Game Object Manager = Elias Kulmbak = v 3.3.0
 // ===========================================================
+/**
+ * TODO: optimize and don't use get everywhere
+ */
 
-let initialized = false;
-
-// ========== CLASSES ===========
-
-// Custom error class. Used to make custom errors only used in the renderer.
 class GOSError extends Error {
     constructor(msg) {
-        super(msg);
-        this.name = "GOS-Error";
+        super(msg)
+        this.name = 'GOS-Error'
     }
 }
 
-// Varible stores the entire node tree
-const rootClass = createClass(class Root { constructor() { } })
-export const objectList = new rootClass('ROOT', 'NONE', -Infinity, 0, [])
+class Emitter {
+    /**
+     * Custom Event listener
+     * @param  {String} id - Id of the Emitter
+     * @param  {Function} resolve - Function triggering Emit event;
+     */
 
-// ========== Public Methods =========
+    constructor(id, resolve) {
+        this.id = id;
+        this.resolve = resolve;
+        this.listeners = [];
+        this.toggle = false;
+    }
 
-// Validate a path and return node at end of path
-export function get(path) {
-    if (path.toUpperCase() !== 'ROOT') {
-        const pathArr = path.split('.');
-        let currNode = objectList;
-        pathArr.forEach(nodeName => {
-            try {
-                currNode = currNode.children.get(nodeName)
-            } catch (error) {
-                throw new GOSError('Invalid path: ' + error);
-            }
+    /**
+     * Trigger event
+     */
+
+    emit() {
+        console.log(`Emitted: ${this.id}`)
+        this.listeners.forEach(callback => {
+            callback();
         });
-        return currNode
-    } else {
-        return objectList;
     }
-}
 
-// Insert node into node.data, accounting for priority
-function insertNode(node) {
-    const parent = node.parent == 'NONE' ? objectList : node.parent;
-    const oldChildren = [...parent.children];
-    const leftSide = oldChildren.filter(entry => { return entry[1].priority <= node.priority ? true : false });
-    const rightSide = oldChildren.filter(entry => { return entry[1].priority > node.priority ? true : false });
-    parent.children = new Map([].concat(leftSide, [[node.id, node]], rightSide));
-}
+    /**
+     * Add Listener to event trigger
+     * @param  {Function} callback - Callback function
+     */
 
-function createClass(customClass) {
-    const newClass = class Node extends customClass {
-        constructor(id, parent, priority, level, args) {
-            super(...args)
-            this.id = id;
-            this.parent = parent; // The node's parent. For easier access through the tree
-            this.children = new Map(); // Data of the node. Contains other nodes and leafs
-            this.priority = priority; // Node priority. Defines which sibling is read first
-            this.level = level; // Defines nodes level in tree
-            this.freeze = false; // Freeze node affects draw()
-            this.localCoordinates = {x:0,y:0}; // Defines coordinates of local object
-            this.useLocalCoordinates = false // Defines whether or not to use local or global coordinates
 
-            this.init = () => {
-                if (initialized) {
-                    if (super.setup) {
-                        super.setup();
-                    }
-                }
-                delete (this.init);
-            }
-            this.init();
+    addListener(callback) {
+        if(this.toggle){
+            callback();
+        } else {
+            this.listeners.push(callback);
         }
     }
-    return newClass
+    set(state){
+        this.toggle = state;
+    }
 }
 
-// Create a node
-export function createNode(path, id, priority, args, classBody) {
+export const initialized = new Emitter('initialized');
+
+class Node {
+    /**
+     * Base Object for any GameObject
+     * @param  {String} id - Unique Identification of node
+     * @param  {Node} parent - Parent node
+     * @param  {Number} priority - Draw order of node (Higher is on top)
+     * @param  {Number} level - Level in tree
+     */
+
+    constructor(id, parent, priority, level) {
+        this.id = id;
+        this.parent = parent;
+        this.children = new Map();
+        this.priority = priority;
+        this.level = level;
+        this.freeze = false;
+
+        this.init = () => {
+            if (initialized && super.setup !== undefined) super.setup();
+
+            delete this.init;
+        }
+        this.init();
+    }
+}
+
+const builtInModules = {
+    Position: class Position {
+        constructor() {
+            this.x;
+            this.y;
+        }
+
+    }
+}
+
+/**
+ * Root reference for tree
+ * @const {Object}
+ */
+export const objectList = new Node('Root', null, -Infinity, 0);
+
+
+/**
+ * Validate path
+ * @param  {String} path - Path to node
+ * @return {Node} - Node 
+ */
+
+export function get(path) {
+    if (path == 'Root') return objectList;
+
+    const pathArr = path.split('.')
+    let currNode = objectList
+    pathArr.forEach((nodeName) => {
+
+        if (currNode.children.get(nodeName) == undefined) {
+            throw new GOSError(`Invalid path: ${path}. ${nodeName} does not exist`);
+        }
+
+        currNode = currNode.children.get(nodeName);
+    })
+    return currNode;
+}
+
+/**
+ * Inserts node into the tree accounting for priority
+ * @param  {Object} node - Node object to insert
+ */
+
+function insertNode(node) {
+    const parent = node.parent == null ? objectList : node.parent;
+
+    // Sort children
+    const oldChildren = [...parent.children]; // Get array of all children
+
+    // Filter both for the priority of the new node:
+    const leftSide = oldChildren.filter((entry) => {
+        // If same priority new node wins
+        return entry[1].priority <= node.priority ? true : false
+    })
+    const rightSide = oldChildren.filter((entry) => {
+        return entry[1].priority > node.priority ? true : false
+    })
+
+    // Set result as new Map
+    parent.children = new Map([].concat(leftSide, [[node.id, node]], rightSide))
+}
+
+/**
+ * Adds a module to node
+ * @param  {Node} node - Node
+ * @param  {Array} args - Arguments for module
+ * @param  {String|class} module - Can either be default module or a custom class
+ */
+
+export function addModule(node, args, module) {
+    const allModules = Object.keys(builtInModules);
+    let Module;
+
+    if (allModules.indexOf(module) != -1) {
+        Module = builtInModules[module];
+    } else {
+        Module = module;
+    }
+
+    node[Module.name] = new Module(...args)
+
+    if (node[Module.name].setup) initialized.addListener(() => node[Module.name].setup());
+}
+
+/**
+ * Create a new node
+ * @param  {String} path - path to insert node
+ * @param  {String} id - id of new node
+ * @param  {Number} priority - draworder
+ * @param  {Array} args - arguments for defaultModule 
+ * @param  {Class} defaultModule - default class for code in node
+ */
+
+export function createNode(path, id, priority, args, defaultModule) {
+    // Check if node already exists
+    // get(`${path}.${id}`);
+    // throw new GOSError(`A node with id: ${id} already exists in ${path}`);
     const parent = get(path);
-    const level = path.toUpperCase() == 'ROOT' ? 1 : 1 + path.split('.').length;
-    const customClass = createClass(classBody)
-    insertNode(new customClass(id, parent, priority, level, args));
+    const level = path == 'Root' ? 1 : 1 + path.split('.').length;
+
+    const Base = new Node(id, parent, priority, level);
+    addModule(Base, [], 'Position');
+
+    const Default = new defaultModule(...args);
+    const DefaultExtendBase = Object.assign(Base, Default);
+
+    if (DefaultExtendBase.setup) initialized.addListener(() => { DefaultExtendBase.setup(); })
+
+    insertNode(DefaultExtendBase);
 }
 
-// Delete a node
+/**
+ * Delete a node from tree
+ * @param  {String} path
+ */
+
 export function deleteNode(path) {
-    const node = get(path);
+    const node = get(path)
     node.parent.children.delete(node.id);
 }
 
+/**
+ * @param  {} node=objectList
+ */
+
 window.draw = (node = objectList) => {
     if (!node.freeze) {
+        // Make all p5 rendering functions temporary: See p5js.org/reference for reference
         push();
 
+        // Get all the methods of object
         const ownMethods = Object.keys(node);
-        const parentMethods = Object.getOwnPropertyNames(node.__proto__.__proto__);
-        const objectMethods = ownMethods.concat(parentMethods).filter(key => typeof node[key] === 'function')
+        const objectMethods = ownMethods.filter((key) => typeof node[key] === 'function');
 
-        if (objectMethods.indexOf('update') != -1) {
-            node.update();
-        }
-        node.children.forEach(child => window.draw(child))
+        // If update exist
+        if (objectMethods.indexOf('update') !== -1) node.update();
+
+        // Repeat for all children
+        node.children.forEach((child) => window.draw(child));
+
+        // Revert to before push
         pop();
     }
 }
 
-window.setup = (node = objectList) => {
 
-    const ownMethods = Object.keys(node);
-    const parentMethods = Object.getOwnPropertyNames(node.__proto__.__proto__);
-    const objectMethods = ownMethods.concat(parentMethods).filter(key => typeof node[key] === 'function')
-
-    if (objectMethods.indexOf('setup') != -1) {
-        node.setup();
-    }
-    node.children.forEach(child => window.setup(child))
-    initialized = true
+window.setup = () => {
+    initialized.emit();
+    initialized.set(true);
 }
-
 
 // ========= OTHER ESSENSIALS
 
 export function createGameObject(src) {
-    const js = document.createElement("script");
-    js.type = 'module';
+    const js = document.createElement('script')
+    js.type = 'module'
     js.src = src
-    document.body.appendChild(js);
+    document.body.appendChild(js)
 }
 
-export function setRefference(path) {
-    
+let indexedNames = {}
+
+export function getIndex(name) {
+    if (indexedNames[name] != undefined) {
+        return name + indexedNames[name]++;
+    } else {
+        indexedNames[name] = 0
+        return name + indexedNames[name];
+    }
 }
+
+// debug
+
+class Debugger {
+    constructor() { }
+    createSimple(path) {
+        createNode(path, getIndex('debugSimple'), 4, [], class debugSimple {
+            constructor() { }
+            update() {
+                circle(this.position.x, this.position.y, 100)
+            }
+        });
+    }
+    createCircle(path, x, y) {
+        createNode(path, getIndex('debugCircle'), 4, [x, y], class debugCircle {
+            constructor(x, y) {
+                this.x = x
+                this.y = y
+            }
+            update() {
+                circle(this.x, this.y, 100)
+            }
+        });
+    }
+}
+
+export const debug = new Debugger()
