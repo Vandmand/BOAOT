@@ -1,43 +1,47 @@
+
+/**
+ * @module './modules/gos-manager.js'
+ */
 import * as GOS from './modules/gos-manager.js';
-import * as GXY from './modules/GXY-manager.js';
 
 document.body.style.overflow = 'hidden';
 
 window.money = 5000;
 
+
+
 GOS.createNode('Root', 'Game', 0, [], class Game { 
   constructor() { } 
-  // update(){
-  //   if(mouseX < 80){
-  //       if(keyCode === SHIFT && keyIsPressed){
-  //           this.x+=8;}
-  //           else { this.x+=2;}
-  //   } else if (mouseX > windowWidth-80){
-  //       if(keyCode === SHIFT && keyIsPressed){
-  //           this.x-=8;}
-  //           else { this.x-=2;}
-  //   }
-  //   // if (mouseY < 80 && relativeY < 0){
-  //   //     if(keyCode === SHIFT && keyIsPressed){
-  //   //         relativeY+=8;}
-  //   //         else { relativeY+=2;}
+  update(){
+    if(mouseX < 80){
+        if(keyCode === SHIFT && keyIsPressed){
+            this.Position.x+=8;}
+            else { this.Position.x+=2;}
+    } else if (mouseX > windowWidth-80){
+        if(keyCode === SHIFT && keyIsPressed){
+            this.Position.x-=8;}
+            else { this.Position.x-=2;}
+    }
+    if (mouseY < 80){
+        if(keyCode === SHIFT && keyIsPressed){
+            this.Position.y+=8;}
+            else { this.Position.y+=2;}
         
-  //   // } else if (mouseY > windowHeight-80 && relativeY > -1600){
-  //   //     if(keyCode === SHIFT && keyIsPressed){
-  //   //         relativeY-=8;}
-  //   //         else { relativeY-=2;}
-  //   //     }
-  //   }
+    } else if (mouseY > windowHeight-80){
+        if(keyCode === SHIFT && keyIsPressed){
+            this.Position.y-=8;}
+            else { this.Position.y-=2;}
+        }
+    }
 });
 // GOS.createNode('Root', 'UI', 1, [], class UI { constructor() { } })
 
-GOS.initialized.addListener(() => {
+GOS.initialized.onEmit(() => {
   createCanvas(windowWidth,windowHeight);
   soundFormats('mp3');
 });
 
 GOS.get('Root').update = () => {
-  GXY.moveWindow();
   background(182, 219, 246);
 }
 
@@ -52,9 +56,9 @@ window.newC = function () {
 }
 
 window.mouseClicked = function () {
-  console.log(GXY.transform(-mouseX, "x"), GXY.transform(-mouseY, "y"))
+  const Game = GOS.get('Game')
+  console.log(Game.Position.x,Game.Position.y)
 }
 
 
 window.GOS = GOS;
-window.GXY = GXY;

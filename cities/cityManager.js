@@ -11,8 +11,9 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         this.citySoundEffect;
     }
     createCity(x, y, id, Graphics = this.cityGraphics) {
-        GOS.createNode('Game.CityManager', id, 1, [x, y, Graphics], classes.City);
-        
+        GOS.createNode('Game.CityManager', id, 1, [x,y,Graphics], classes.City);
+
+
         if (typeof id === 'string') {
             this.cities.push(GOS.get('Game.CityManager.' + id));
         }
@@ -31,7 +32,7 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
 
     gameStart() { //upon game start, 2 cities must be initilized before we assign them trade
         //start city:
-        let cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
+        const cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
         this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
 
         let city1 = cityData[cityDataIndex];
@@ -39,8 +40,8 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         //sorts all cities in decending order acording to distance to city1:
         cityData.sort((a, b) => dist(city1.x, city1.y, a.x, a.y) - dist(city1.x, city1.y, b.x, b.y))
         //it then chooses a random of the 3 element and makes a city
-        cityDataIndex = Math.floor(Math.random() * 2);
-        this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
+        const cityIndex2 = Math.floor(Math.random() * 2);
+        this.createCity(cityData[cityIndex2].x, cityData[cityIndex2].y, cityData[cityIndex2].name);
         cityData.splice(cityDataIndex, 1);
 
         this.assignTrade();

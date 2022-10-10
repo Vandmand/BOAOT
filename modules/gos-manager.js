@@ -4,6 +4,9 @@
 /**
  * TODO: optimize and don't use get everywhere
  */
+'use strict';
+
+import * as Modules from './defaultModules.js'
 
 class GOSError extends Error {
     constructor(msg) {
@@ -12,7 +15,7 @@ class GOSError extends Error {
     }
 }
 
-class Emitter {
+class EventEmitter {
     /**
      * Custom Event listener
      * @param  {String} id - Id of the Emitter
@@ -31,7 +34,6 @@ class Emitter {
      */
 
     emit() {
-        console.log(`Emitted: ${this.id}`)
         this.listeners.forEach(callback => {
             callback();
         });
@@ -42,7 +44,7 @@ class Emitter {
      * @param  {Function} callback - Callback function
      */
 
-    addListener(callback) {
+    onEmit(callback) {
         if (this.toggle) {
             callback();
         } else {
@@ -59,7 +61,7 @@ class Emitter {
     }
 }
 
-export const initialized = new Emitter('initialized');
+export const initialized = new EventEmitter('initialized');
 
 class Node {
     /**
@@ -78,26 +80,10 @@ class Node {
         this.level = level;
         this.freeze = false;
     }
-    method(){
+    method() {
         return true
     }
 }
-
-const builtInModules = {
-    Position: class Position {
-        constructor() {
-            this.globalPosition = false;
-            this.localX = 0;
-            this.localY = 0;
-        }
-        get x() {
-            if(this.globalPosition) return this.localX;
-            return this.localX + this.node.parent.Position.x;
-        }
-
-    }
-}
-
 
 /**
  * Root reference for tree
@@ -106,8 +92,8 @@ const builtInModules = {
 export const objectList = new Node('Root', null, -Infinity, 0);
 
 objectList.freeze = true;
-objectList.Position = {x: 0, y: 0}
-initialized.addListener(() => {objectList.freeze = false;})
+objectList.Position = { x: 0, y: 0 }
+initialized.onEmit(() => { objectList.freeze = false; })
 
 
 /**
@@ -140,12 +126,9 @@ export function get(path) {
 function insertNode(node) {
     const parent = node.parent == null ? objectList : node.parent;
 
-    // Sort children
-    const oldChildren = [...parent.children]; // Get array of all children
+    const oldChildren = [...parent.children];
 
-    // Filter both for the priority of the new node:
     const leftSide = oldChildren.filter((entry) => {
-        // If same priority new node wins
         return entry[1].priority <= node.priority ? true : false
     })
     const rightSide = oldChildren.filter((entry) => {
@@ -160,24 +143,13 @@ function insertNode(node) {
  * Adds a module to node
  * @param  {Node} node - Node
  * @param  {Array} args - Arguments for module
- * @param  {String|class} module - Can either be default module or a custom class
+ * @param  {class} module - Can either be default module or a custom class
  */
 
 export function addModule(node, args, module) {
-    const allModules = Object.keys(builtInModules);
-    let Module;
-    
-    if (allModules.indexOf(module) != -1) {
-        Module = builtInModules[module];
-    } else {
-        Module = module;
-    }
-
-    node[Module.name] = new Module(...args);
-    node[Module.name].node = node;
-    console.log(node[Module.name].node)
-
-    if (node[Module.name].setup) initialized.addListener(() => node[Module.name].setup());
+    node[module.name] = new module(...args);
+    node[module.name].node = node;
+    if (node[module.name].setup) initialized.onEmit(() => node[module.name].setup());
 }
 
 /**
@@ -197,12 +169,12 @@ export function createNode(path, id, priority, args, defaultModule) {
     const level = path == 'Root' ? 1 : 1 + path.split('.').length;
 
     const Base = new Node(id, parent, priority, level);
-    addModule(Base, [], 'Position')
+    addModule(Base, [], Modules.Position);
 
     const DefaultModule = new defaultModule(...args);
     const DefaultExtendBase = Object.assign(DefaultModule, Base);
 
-    if (DefaultExtendBase.setup) initialized.addListener(() => {DefaultExtendBase.setup(); })
+    if (DefaultExtendBase.setup) initialized.onEmit(() => { DefaultExtendBase.setup(); })
 
     insertNode(DefaultExtendBase);
 }
@@ -222,12 +194,12 @@ export function deleteNode(path) {
  */
 
 window.draw = (node = objectList) => {
-    if (node.freeze) {return;}
+    if (node.freeze) { return; }
 
     push();
 
     // If update exist
-    if (node.update) {node.update()};
+    if (node.update) { node.update() };
 
     // Repeat for all children
     node.children.forEach((child) => window.draw(child));
@@ -287,9 +259,9 @@ class Debugger {
             }
         });
     }
-    addDrawValue(val){
+    addDrawValue(val) {
         this.drawValues.unshift(val);
-        if(this.drawValues.length > 20){
+        if (this.drawValues.length > 20) {
             this.drawValues.pop();
         }
     }

@@ -1,5 +1,3 @@
-import * as GXY from './modules/GXY-manager.js'
-
 let roadInt = 0;
 GOS.createNode('Root', 'roadManager', 0, [], class roadManager {
     constructor() {
@@ -13,9 +11,9 @@ GOS.createNode('Root', 'roadManager', 0, [], class roadManager {
                 this.city2;
             }
             update() {
-                let secondSet = this.city2 ? this.city2 : {x: mouseX-GXY.relativeX, y: mouseY-GXY.relativeY}
-                strokeWeight(15)
-                line(GXY.transform(this.city1.x,'x'),GXY.transform(this.city1.y,'y'), GXY.transform(secondSet.x,'x'), GXY.transform(secondSet.y,'y'))
+                let secondSet = this.city2 ? this.city2 : {Position: {x: mouseX, y: mouseY }};
+                strokeWeight(15);
+                line(this.city1.Position.x,this.city1.Position.y, secondSet.Position.x, secondSet.Position.y)
             }
             finish(city2) {
                 this.city2 = city2
@@ -29,7 +27,7 @@ GOS.createNode('Root', 'roadManager', 0, [], class roadManager {
                 }
             }
         })
-    }
+    } 
 
     setup(){
     this.errorSoundEffect = loadSound('./assets/sound/Error.mp3');

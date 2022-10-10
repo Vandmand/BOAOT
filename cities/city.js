@@ -14,8 +14,8 @@ export class City {
         this.nextExport = 0;
         this.neighbors = [];
 
-        this.x = x;
-        this.y = y;
+        this.x = x
+        this.y = y
     }
     createPacket(from, to) {
         GOS.createNode('Game', 'PacketFrom' + from.id + 'To' + to.id, -1, [from, to], class Packet {
@@ -59,6 +59,12 @@ export class City {
             }
         });
     }
+    setup(){
+        this.Position.x = this.x
+        this.Position.y = this.y
+        delete this.x
+        delete this.y
+    }
 
     update() {
         // Elias was here
@@ -99,10 +105,10 @@ export class City {
     drawCity() {
         strokeWeight(1);
         if (this.initialSize < this.visualDiameter) { //small animation for when the city spawns
-            image(this.cityGraphics[this.state], GXY.transform(this.x, "x") - this.initialSize / 2, GXY.transform(this.y, "y") - this.initialSize / 2, this.initialSize, this.initialSize);
+            image(this.cityGraphics[this.state], this.Position.x - this.initialSize / 2, this.Position.y - this.initialSize / 2, this.initialSize, this.initialSize);
             this.initialSize++;
         } else {
-            image(this.cityGraphics[this.state], GXY.transform(this.x, "x") - this.visualDiameter / 2, GXY.transform(this.y, "y") - this.visualDiameter / 2, this.visualDiameter, this.visualDiameter);
+            image(this.cityGraphics[this.state], this.Position.x - this.visualDiameter / 2, this.Position.y - this.visualDiameter / 2, this.visualDiameter, this.visualDiameter);
         }
     }
 
@@ -110,8 +116,8 @@ export class City {
         if (this.mouseOverCity()) {
             textAlign(CENTER, CENTER)
             rectMode(CENTER);
-            let tempX = GXY.transform(this.x, "x")
-            let tempY = GXY.transform(this.y, "y")
+            let tempX = this.Position.x
+            let tempY = this.Position.y
             line(tempX, tempY - 25, tempX, tempY - 50);
             rect(tempX, tempY - 50 - 6.25, 200, 25 + 12.5)
             let ex = typeof this.tradeExport === 'object' ? this.tradeExport.id : 'None';
@@ -122,7 +128,7 @@ export class City {
     }
     //====================
     mouseOverCity() {
-        return dist(mouseX, mouseY, GXY.transform(this.x, "x"), GXY.transform(this.y, "y")) <= this.visualDiameter / 2 ? true : false;
+        return dist(mouseX, mouseY, this.Position.x, this.Position.y) <= this.visualDiameter / 2 ? true : false;
     }
     supplyCity(tradeImport) {
         if (this.tradeImport === tradeImport) {
