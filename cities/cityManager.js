@@ -1,7 +1,6 @@
 import { cityData } from './cityData.js'
 
 let difficulty = 3; //increase to make cities spawn further away from each other
-
 let startDrag = false;
 
 /**
@@ -169,7 +168,6 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         this.cityGraphics = []; //it's loaded in the city manager to reduce stress
         this.citySoundEffect;
 
-        this.startCity;
         this.cityData = cityData;
     }
 
@@ -195,7 +193,7 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         this.citySoundEffect = loadSound('./assets/sound/Whoosh.mp3');
     }
 
-    gameStart() { 
+    gameStart() {
         const city1 = this.#getCity();
         const city2 = this.#getCity();
 
@@ -212,7 +210,7 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         if (Math.random() * 1000 > this.counter / 1000) { this.counter++; return; }
 
         const city = this.#getCity();
-        const node1 = this.createCity(city.x,city.y,city.name);
+        this.createCity(city.x, city.y, city.name);
 
         this.citySoundEffect.play();
         this.counter = 0;
@@ -229,12 +227,17 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
      * @returns City node
      */
     #getCity() {
-        if (!this.startCity) {
-            this.startCity = cityData.splice(Math.floor(random(cityData.length)));
-            this.cityData.sort((a, b) => dist(this.startCity.x, this.startCity.y, a.x, a.y) - dist(this.startCity.x, this.startCity.y, b.x, b.y));
-            return this.startCity;
-        } else {
-            return this.cityData.splice(Math.floor(random(3)));
+        const first = this.cities == 0 ? true : false;
+        let arrIndex = first ? Math.floor(random(3)) : Math.floor(random(cityData.length));
+        const city = cityData[arrIndex];
+        if (first) {
+            this.cityData.sort((a, b) => {
+                dist(city.x, city.y, a.x, a.y) -
+                    dist(city.x, city.y, b.x, b.y);
+            });
         }
+        cityData.splice(arrIndex);
+        this.cities.push(city); 
+        return city;
     }
 });
