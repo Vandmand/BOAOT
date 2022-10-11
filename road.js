@@ -23,7 +23,7 @@ GOS.createNode('Root', 'roadManager', 0, [], class roadManager {
                     this.city2 = city2
                     city1.neighbors.push(this.city2)
                     city2.neighbors.push(this.city1)
-                    window.money -= Math.floor(dist(this.city1.Position.x,this.city1.Position.y,this.city2.Position.x,this.city2.y) * 10)
+                    window.money -= Math.floor(dist(this.city1.Position.x,this.city1.Position.y,this.city2.Position.x,this.city2.Position.y) * 10)
                 }
             }
         })

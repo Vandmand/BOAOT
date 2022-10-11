@@ -48,7 +48,7 @@ class City {
                             this.to.timeSinceSupply = 0;
                             GOS.get('UI').earned = ''
                         }, 2000)
-                        GOS.deleteNode(this.id);
+                        GOS.deleteNode('Game.'+this.id);
                     }, depth * 1000)
                 }
             }
@@ -169,7 +169,6 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         this.citySoundEffect;
 
         this.cityData = cityData;
-        console.log(cityData)
     }
 
     /**
@@ -194,9 +193,13 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         this.citySoundEffect = loadSound('./assets/sound/Whoosh.mp3');
     }
 
+    /**
+     * Create two cities for start of game
+     */
     gameStart() {
         const city1 = this.#getCity();
         const city2 = this.#getCity();
+        console.log(city1,city2)
 
         const node1 = this.createCity(city1.x, city1.y, city1.name);
         const node2 = this.createCity(city2.x, city2.y, city2.name);
@@ -229,16 +232,16 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
      */
     #getCity() {
         const first = this.cities == 0 ? true : false;
-        let arrIndex = first ? Math.floor(random(3)) : Math.floor(random(this.cityData.length));
+        let arrIndex = first ? Math.floor(random(this.cityData.length)) : Math.floor(random(3));
         const city = this.cityData[arrIndex];
         if (first) {
             this.cityData.sort((a, b) => {
-                dist(city.x, city.y, a.x, a.y) -
-                    dist(city.x, city.y, b.x, b.y);
+                return dist(city.x, city.y, a.x, a.y) - dist(city.x, city.y, b.x, b.y);
             });
         }
         this.cityData.splice(arrIndex,1);
         this.cities.push(city); 
+        console.log(this.cityData, arrIndex, this.cityData[arrIndex])
         return city;
     }
 });
