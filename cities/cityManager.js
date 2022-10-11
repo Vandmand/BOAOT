@@ -169,6 +169,7 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         this.citySoundEffect;
 
         this.cityData = cityData;
+        console.log(cityData)
     }
 
     /**
@@ -228,15 +229,15 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
      */
     #getCity() {
         const first = this.cities == 0 ? true : false;
-        let arrIndex = first ? Math.floor(random(3)) : Math.floor(random(cityData.length));
-        const city = cityData[arrIndex];
+        let arrIndex = first ? Math.floor(random(3)) : Math.floor(random(this.cityData.length));
+        const city = this.cityData[arrIndex];
         if (first) {
             this.cityData.sort((a, b) => {
                 dist(city.x, city.y, a.x, a.y) -
                     dist(city.x, city.y, b.x, b.y);
             });
         }
-        cityData.splice(arrIndex);
+        this.cityData.splice(arrIndex,1);
         this.cities.push(city); 
         return city;
     }
