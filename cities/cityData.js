@@ -1,0 +1,22 @@
+//this file is temporary for the testing phase of the game
+export const cityData = [
+{name: "Berlin",x:2006, y:439},
+{name: "Paris", x:1873, y:497},
+{name: "Prag", x:2022, y:474},
+{name: "Oslo", x:1976, y:329},
+{name: "Rome", x:2002, y:599},
+{name: "Tokoyo", x:3648, y:693},
+{name: "Randers", x:1962, y:382},
+{name: "Copenhagen", x:1995, y:393},
+{name: "CapeTown", x:2081, y:1780},
+{name: "MexicoCity", x:486, y:949},
+{name: "Cairo", x:2246, y:786},
+{name: "Kyiv", x:2211, y:471},
+{name: "Beijing",x:3326, y:635},
+{name: "New Dehli",x:2854, y:81},
+{name: "Brasilia",x:1217, y:1496},
+{name: "Washington DC",x:860, y:64},
+{name: "Luanda",x:2016, y:1394},
+{name: "Sydney", x:3786, y:1793},
+{name: "Dublin", x:1776, y:428},
+]

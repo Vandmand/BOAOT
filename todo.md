@@ -2,7 +2,7 @@
 [x] Clean up names
 [x] That one line in the GOS
 [x] Change name of errors
-[ ] Integrate GXY into GOS
+[x] Integrate GXY into GOS
 [ ] Animation modules
 [ ] Collision module
 [ ] Frontend UI designer

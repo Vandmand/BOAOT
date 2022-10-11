@@ -8,8 +8,7 @@ document.body.style.overflow = 'hidden';
 
 window.money = 5000;
 
-
-
+let startDrag = false
 GOS.createNode('Root', 'Game', 0, [], class Game { 
   constructor() { } 
   update(){

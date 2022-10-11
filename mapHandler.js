@@ -8,5 +8,5 @@ GOS.createNode('Game', 'Map', -1, [], class Map {
    update() {
       image(this.worldMap, this.Position.x, this.Position.y);
    }
-})
+});
 

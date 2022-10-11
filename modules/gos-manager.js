@@ -18,13 +18,9 @@ class GOSError extends Error {
 class EventEmitter {
     /**
      * Custom Event listener
-     * @param  {String} id - Id of the Emitter
-     * @param  {Function} resolve - Function triggering Emit event;
      */
 
-    constructor(id, resolve) {
-        this.id = id;
-        this.resolve = resolve;
+    constructor() {
         this.listeners = [];
         this.toggle = false;
     }
@@ -56,12 +52,17 @@ class EventEmitter {
      * @param  {Boolean} state - Toggle emitters state
      */
 
-    set(state) {
+    set(state = !this.toggle) {
         this.toggle = state;
+        if(this.toggle){
+            this.listeners.forEach(callback => {
+                callback();
+            })
+        }
     }
 }
 
-export const initialized = new EventEmitter('initialized');
+export const initialized = new EventEmitter();
 
 class Node {
     /**
@@ -79,9 +80,6 @@ class Node {
         this.priority = priority;
         this.level = level;
         this.freeze = false;
-    }
-    method() {
-        return true
     }
 }
 
@@ -174,9 +172,11 @@ export function createNode(path, id, priority, args, defaultModule) {
     const DefaultModule = new defaultModule(...args);
     const DefaultExtendBase = Object.assign(DefaultModule, Base);
 
-    if (DefaultExtendBase.setup) initialized.onEmit(() => { DefaultExtendBase.setup(); })
+    if (DefaultExtendBase.setup) { initialized.onEmit(() => { DefaultExtendBase.setup(); }) }
 
     insertNode(DefaultExtendBase);
+
+    return DefaultExtendBase;
 }
 
 /**
@@ -211,7 +211,6 @@ window.draw = (node = objectList) => {
 
 
 window.setup = () => {
-    initialized.emit();
     initialized.set(true);
 }
 
