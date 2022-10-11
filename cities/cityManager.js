@@ -18,10 +18,10 @@ class City {
         this.visualDiameter = 50;
         this.state = 0;
         this.initialSize = 1; //used to make a simple iteration animation
-
         this.nextExport = 0;
         this.neighbors = [];
 
+        // Maybe find better system for this;
         this.x = x
         this.y = y
     }
@@ -65,14 +65,14 @@ class City {
                             this.here.push(neighbor.id);
                             this.move(neighbor);
                         }
-                        this.i--
+                        this.i--;
                     })
                     return this.i;
                 }
             }
         });
     }
-    setup(){
+    setup() {
         this.Position.x = this.x;
         this.Position.y = this.y;
         delete this.x;
@@ -112,6 +112,15 @@ class City {
             this.drawCity();
             this.displayInfo();
         }
+    }
+
+    /**
+     * Assigns a trade to a city
+     * @param  {Node} city - Target for import
+     */
+    assignTrade(city) {
+        this.tradeImport = city;
+        city.tradeExport = this;
     }
 
     //====Visual methods====
@@ -159,8 +168,11 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         this.counter = 0;
         this.cityGraphics = []; //it's loaded in the city manager to reduce stress
         this.citySoundEffect;
+
+        this.startCity;
+        this.cityData = cityData;
     }
-    
+
     /**
      * Create new city GameObject
      * @param  {Number} x - x position for city
@@ -169,14 +181,10 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
      * @param  {String} Graphics - Images for rendering city
      */
     createCity(x, y, id, Graphics = this.cityGraphics) {
-        GOS.createNode('Game.CityManager', id, 1, [x,y,Graphics], City);
-
-        if (typeof id === 'string') {
-            this.cities.push(GOS.get('Game.CityManager.' + id));
-        }
+        const node = GOS.createNode('Game.CityManager', id, 1, [x, y, Graphics], City);
+        if (typeof id === 'string') { this.cities.push(GOS.get('Game.CityManager.' + id)); }
+        return node;
     }
-
-    // ======== cityHandler Methods =======
     setup() {
         this.cityGraphics = [
             loadImage('./assets/city icon/City_logo.png'),
@@ -187,36 +195,26 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         this.citySoundEffect = loadSound('./assets/sound/Whoosh.mp3');
     }
 
-    gameStart() { //upon game start, 2 cities must be initilized before we assign them trade
-        //start city:
-        const cityDataIndex = Math.floor(Math.random() * (cityData.length - 1));
-        this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
+    gameStart() { 
+        const city1 = this.#getCity();
+        const city2 = this.#getCity();
 
-        let city1 = cityData[cityDataIndex];
-        cityData.splice(cityDataIndex, 1);
-        //sorts all cities in decending order acording to distance to city1:
-        cityData.sort((a, b) => dist(city1.x, city1.y, a.x, a.y) - dist(city1.x, city1.y, b.x, b.y))
-        //it then chooses a random of the 3 element and makes a city
-        const cityIndex2 = Math.floor(Math.random() * 2);
-        this.createCity(cityData[cityIndex2].x, cityData[cityIndex2].y, cityData[cityIndex2].name);
-        cityData.splice(cityDataIndex, 1);
+        const node1 = this.createCity(city1.x, city1.y, city1.name);
+        const node2 = this.createCity(city2.x, city2.y, city2.name);
 
-        this.assignTrade();
-
+        node1.assignTrade(node2);
     }
 
     /**
      * tries to make a city based on chance
      */
     tryForCity() {
-        if (Math.random() * 1000 > this.counter / 1000) {this.counter++; return;}
+        if (Math.random() * 1000 > this.counter / 1000) { this.counter++; return; }
 
-        let cityDataIndex = Math.floor(Math.random() * difficulty);
-        this.createCity(cityData[cityDataIndex].x, cityData[cityDataIndex].y, cityData[cityDataIndex].name);
-        cityData.splice(cityDataIndex, 1);
+        const city = this.#getCity();
+        const node1 = this.createCity(city.x,city.y,city.name);
+
         this.citySoundEffect.play();
-
-        this.assignTrade();
         this.counter = 0;
     }
 
@@ -224,17 +222,19 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         if (cityData.length != 0) {
             this.tryForCity();
         }
-
     }
 
-    assignTrade() { //assigns import and export in pairs
-        let i = 0;
-        while (typeof this.cities[i].tradeExport !== 'undefined' && this.cities.length - 1 > i) { i++; }
-        if (this.cities.length - 1 >= i + 1) {
-            this.cities[i].tradeExport = this.cities[i + 1];
-            this.cities[i + 1].tradeImport = this.cities[i];
-        } else { throw RangeError('Not enough unassigned cities to assign trade'); }
-
+    /**
+     * Get a city from database
+     * @returns City node
+     */
+    #getCity() {
+        if (!this.startCity) {
+            this.startCity = cityData.splice(Math.floor(random(cityData.length)));
+            this.cityData.sort((a, b) => dist(this.startCity.x, this.startCity.y, a.x, a.y) - dist(this.startCity.x, this.startCity.y, b.x, b.y));
+            return this.startCity;
+        } else {
+            return this.cityData.splice(Math.floor(random(3)));
+        }
     }
 });
-
