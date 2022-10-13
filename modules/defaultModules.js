@@ -48,9 +48,6 @@ export class Vector2 {
         this.mag = dist(0, 0, this.x, this.y);
         this.lAngle = Math.atan(this.x / this.y);
     }
-    
-
-
 }
 
 /**

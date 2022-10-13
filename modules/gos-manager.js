@@ -93,7 +93,6 @@ objectList.freeze = true;
 objectList.Position = { x: 0, y: 0 }
 initialized.onEmit(() => { objectList.freeze = false; })
 
-
 /**
  * Validate path
  * @param  {String} path - Path to node
