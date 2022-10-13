@@ -158,7 +158,7 @@ export function addModule(node, args, module) {
  * @param  {Class} defaultModule - default class for code in node
  */
 
-export function createNode(path, id, priority, args, defaultModule) {
+export async function createNode(path, id, priority, args, defaultModule) {
     // Check if node already exists
     // get(`${path}.${id}`);
     // throw new GOSError(`A node with id: ${id} already exists in ${path}`);
