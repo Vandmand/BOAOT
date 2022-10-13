@@ -224,6 +224,12 @@ export function createGameObject(src) {
 }
 
 const indexedNames = {};
+/**
+ * Use a string to get indexed version back
+ * For spawning GameObjects with same name
+ * @param {String} name 
+ * @returns Numbered String
+ */
 export function getIndex(name) {
     if (indexedNames[name] != undefined) {
         return name + indexedNames[name]++;
@@ -231,6 +237,20 @@ export function getIndex(name) {
         indexedNames[name] = 0
         return name + indexedNames[name];
     }
+}
+/**
+ * Linear Interpolation of two values
+ * @param  {Number} t - Value between 0 and 1
+ * @param  {Number} a - Starting point for lerp
+ * @param  {Number} b - End point for lerp
+ * @return {Number} Value between a and b
+ */
+export function lerp(t,a = 0,b = 1){
+    return a+t*(b-a);
+}
+
+export function smoothStep(t,a,b){
+
 }
 
 // debug

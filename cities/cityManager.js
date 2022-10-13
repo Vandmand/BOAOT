@@ -126,6 +126,7 @@ class City {
     drawCity() {
         strokeWeight(1);
         if (this.initialSize < this.visualDiameter) { //small animation for when the city spawns
+
             image(this.cityGraphics[this.state], this.Position.x - this.initialSize / 2, this.Position.y - this.initialSize / 2, this.initialSize, this.initialSize);
             this.initialSize++;
         } else {
@@ -198,8 +199,12 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
      */
     gameStart() {
         const city1 = this.#getCity();
+
+        this.cityData.sort((a, b) => {
+            return dist(city1.x, city1.y, a.x, a.y) - dist(city1.x, city1.y, b.x, b.y);
+        });
+
         const city2 = this.#getCity();
-        console.log(city1,city2)
 
         const node1 = this.createCity(city1.x, city1.y, city1.name);
         const node2 = this.createCity(city2.x, city2.y, city2.name);
@@ -214,7 +219,8 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
         if (Math.random() * 1000 > this.counter / 1000) { this.counter++; return; }
 
         const city = this.#getCity();
-        this.createCity(city.x, city.y, city.name);
+        this.createCity(city.x, city.y, city.name)
+        .assignTrade(random(this.cities));
 
         this.citySoundEffect.play();
         this.counter = 0;
@@ -231,17 +237,10 @@ GOS.createNode('Game', 'CityManager', 1, [], class CityManager {
      * @returns City node
      */
     #getCity() {
-        const first = this.cities == 0 ? true : false;
-        let arrIndex = first ? Math.floor(random(this.cityData.length)) : Math.floor(random(3));
+        let arrIndex = Math.floor(random(3));
         const city = this.cityData[arrIndex];
-        if (first) {
-            this.cityData.sort((a, b) => {
-                return dist(city.x, city.y, a.x, a.y) - dist(city.x, city.y, b.x, b.y);
-            });
-        }
         this.cityData.splice(arrIndex,1);
         this.cities.push(city); 
-        console.log(this.cityData, arrIndex, this.cityData[arrIndex])
         return city;
     }
 });

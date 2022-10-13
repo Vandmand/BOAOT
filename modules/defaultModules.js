@@ -3,50 +3,79 @@
  * @todo add more functions to Vector2
  */
 export class Vector2 {
-    constructor(x = 0,y = 0) {
+    constructor(x = 0, y = 0) {
         this.x = x;
         this.y = y;
+        this.mag;
+        this.useRadiants = false;
     }
+    /**
+     * @returns new copy of Vector2
+     */
     copy() {
-        return Object.assign({}, Vector2);
+        return { ...this };
     }
-    add(Vector2){
+    /**
+     * Add a vector to object
+     * @param  {Vector2} Vector2
+     */
+    add(Vector2) {
         this.x += Vector2.x;
         this.y += Vector2.y;
     }
-    sub(Vector2){
+    /**
+     * Subtract vetor from object
+     * @param  {Vector2} Vector2
+     */
+    sub(Vector2) {
         this.x -= Vector2.x;
         this.y -= Vector2.y;
     }
+    /**
+     * Set coordinates of vector
+     * @param  {Vector2} Vector2
+     */
+    set(Vector2) {
+        this.x = Vector2.x;
+        this.y = Vector2.y;
+    }
+
+    #localAngle = 0;
+    calcPolar() {
+        this.mag = dist(0, 0, this.x, this.y);
+        this.angle = Math.atan(this.x / this.y);
+    }
+
 
 }
 
 /**
  * @class positioning speifically for GameObjects
  */
-export class Position extends Vector2{
+export class Position extends Vector2 {
     constructor() {
         super();
         this.globalPosition = false;
-        this.localX = 0;
-        this.localY = 0;
+        
     }
+    #localX = 0;
+    #localY = 0;
     set(Vector2) {
-        Vector2.x = this.localX;
-        Vector2.y = this.localY;
+        Vector2.x = this.#localX;
+        Vector2.y = this.#localY;
     }
     get x() {
-        if (this.globalPosition) return this.localX;
-        return this.localX + this.node.parent.Position.x;
+        if (this.globalPosition) return this.#localX;
+        return this.#localX + this.node.parent.Position.x;
     }
     set x(val) {
-        this.localX = val;
+        this.#localX = val;
     }
     get y() {
-        if (this.globalPosition) return this.localY;
-        return this.localY + this.node.parent.Position.y;
+        if (this.globalPosition) return this.#localY;
+        return this.#localY + this.node.parent.Position.y;
     }
     set y(val) {
-        this.localY = val;
+        this.#localY = val;
     }
 }
